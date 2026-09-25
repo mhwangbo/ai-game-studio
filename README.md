@@ -76,6 +76,12 @@ python -m http.server 8080 --directory examples/mothlight/game
 
 Then open http://localhost:8080 (ES modules need http, not `file://`). Design docs are in `examples/mothlight/docs/`.
 
+## Playtesting: playtest-lab (optional)
+
+[playtest-lab](https://github.com/mhwangbo/playtest-lab) is a companion project with its own repo. It adds deterministic bot players and AI persona playtesters for web, Unity and Godot builds, plus a `playtest-report/1` report.
+
+When it's installed as the `playtest-lab` skill, the studio's playtest gate (`playbooks/playtest.md`) runs it, turns the report's `suggestedTicket`s into tickets, and the lab mirrors summaries into `#qa`. Without it, the studio works exactly as before.
+
 ## Status
 
 - **Tested end to end:** web / jam tier (Mothlight): kickoff, parallel sprints, QA reject → fix loop, Boss gates, pause/directive/chat interrupts, lesson folding.
