@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Studio</title>
+<style>
+:root{
+  --bg:#1a1d21;--side:#19171d;--side2:#2b2a33;--panel:#222529;--card:#2c2f35;--line:#383b41;
+  --text:#e8e8e8;--dim:#9a9ca1;--accent:#4a9eff;--good:#2bac76;--warn:#e8a33d;--bad:#e0474c;--boss:#d9a52c;
+  --mention:#3b3317;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:6px;padding:5px 10px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.good{background:var(--good);border-color:var(--good);color:#fff}
+button.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+input,textarea,select{font:inherit;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+textarea{resize:vertical}
+a{color:var(--accent)}
+#app{display:grid;grid-template-rows:48px 1fr;height:100vh}
+header{display:flex;align-items:center;gap:10px;padding:0 12px;background:#121016;border-bottom:1px solid var(--line);overflow-x:auto}
+header h1{font-size:15px;margin:0;white-space:nowrap}
+.state{padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;text-transform:uppercase}
+.state.running{background:var(--good)}.state.paused{background:var(--warn);color:#000}.state.stopped{background:var(--bad)}
+nav{display:flex;gap:2px;margin-left:8px}
+nav button{border:none;background:none;color:var(--dim);padding:6px 10px}
+nav button.on{color:var(--text);background:var(--side2)}
+.badge{background:var(--bad);color:#fff;border-radius:9px;padding:0 6px;font-size:11px;margin-left:4px}
+.spacer{flex:1}
+.ctl{display:flex;gap:6px;white-space:nowrap}
+.progress{font-size:12px;color:var(--dim);white-space:nowrap}
+.bar{display:inline-block;width:90px;height:6px;background:var(--line);border-radius:3px;vertical-align:middle;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good)}
+main{overflow:hidden;min-height:0}
+.view{display:none;height:100%;min-height:0}
+.view.on{display:flex}
+/* chat */
+#chat aside{width:230px;background:var(--side);border-right:1px solid var(--line);overflow-y:auto;padding:10px 0;flex-shrink:0}
+aside h3{font-size:12px;color:var(--dim);margin:12px 14px 4px;text-transform:uppercase;letter-spacing:.05em}
+.ch{padding:3px 14px;color:var(--dim);cursor:pointer;display:flex;justify-content:space-between}
+.ch:hover{background:var(--side2)}
+.ch.on{background:#1164a3;color:#fff}
+.ch.unread{color:#fff;font-weight:700}
+.who{padding:3px 14px;color:var(--dim);font-size:13px;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.dot.live{background:var(--good)}.dot.stale{background:var(--warn)}.dot.paused{background:var(--bad)}
+.chatmain{flex:1;display:flex;flex-direction:column;min-width:0}
+.chathead{padding:10px 16px;border-bottom:1px solid var(--line);font-weight:700;display:flex;gap:10px;align-items:center}
+.chathead small{font-weight:400;color:var(--dim)}
+#msgs{flex:1;overflow-y:auto;padding:8px 0}
+.msg{display:flex;gap:10px;padding:4px 16px}
+.msg:hover{background:#222529}
+.msg.mention{background:var(--mention)}
+.msg.sys .body{color:var(--dim);font-size:13px}
+.av{width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:#fff}
+.msg .meta{font-size:13px}.msg .meta b{margin-right:6px}.msg .meta span{color:var(--dim);font-size:12px}
+.role{font-size:11px;padding:0 5px;border-radius:4px;background:var(--side2);color:var(--dim);margin-right:6px}
+.body{white-space:pre-wrap;word-wrap:break-word}
+.tk{background:#1d3a57;color:#9fd0ff;border-radius:4px;padding:0 4px;cursor:pointer;font-family:ui-monospace,monospace;font-size:12px}
+.at{background:#3a2f12;color:#f5c451;border-radius:3px;padding:0 2px}
+.compose{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px}
+.compose textarea{flex:1;height:44px}
+/* board */
+#board{flex-direction:column}
+.filters{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.cols{flex:1;display:flex;gap:10px;padding:10px;overflow-x:auto;min-height:0}
+.col{background:var(--panel);border-radius:8px;min-width:240px;width:240px;display:flex;flex-direction:column;min-height:0}
+.col h4{margin:0;padding:10px;font-size:12px;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between}
+.col .list{flex:1;overflow-y:auto;padding:0 8px 8px;min-height:40px}
+.col.drop{outline:2px dashed var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--dim);border-radius:6px;padding:8px;margin-bottom:8px;cursor:pointer}
+.card:hover{border-color:var(--accent)}
+.card .id{font-family:ui-monospace,monospace;font-size:11px;color:var(--dim)}
+.card .t{margin:3px 0}
+.card .f{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--dim)}
+.pill{background:var(--side2);border-radius:4px;padding:0 5px}
+.P0{color:#fff;background:var(--bad)}.P1{color:#000;background:var(--warn)}
+/* team */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.tbl th{color:var(--dim);font-weight:600;font-size:12px}
+.tbl td.num{text-align:right;font-variant-numeric:tabular-nums}
+.hbar{height:6px;background:var(--accent);border-radius:3px;min-width:2px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.tile b{display:block;font-size:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+.panel h3{margin:0 0 8px;font-size:14px}
+.ugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.now{background:#16301f;border:1px solid var(--good);border-radius:8px;padding:12px}
+.now .act{font-family:ui-monospace,monospace;font-size:12px;color:#b8e6c9;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teamh{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);display:flex;gap:8px;align-items:center}
+.chip{border-radius:10px;padding:2px 8px;font-size:12px;background:var(--side2);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--good);color:#fff}
+.dot.done{background:#5b8def}
+#team,#approvals,#docs,#usage{overflow-y:auto;padding:16px;flex-direction:column;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.wcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.wcard .top{display:flex;gap:10px;align-items:center}
+.wcard .st{color:var(--dim);font-size:13px;margin-top:8px}
+.wcard .last{font-size:12px;color:var(--dim);margin-top:6px;border-top:1px solid var(--line);padding-top:6px;white-space:pre-wrap;max-height:80px;overflow:hidden}
+.appr{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.appr .what{flex:1;min-width:220px}
+.docwrap{display:flex;gap:12px;min-height:0;flex:1}
+.doclist{width:220px;flex-shrink:0}
+.doclist div{padding:6px 8px;border-radius:6px;cursor:pointer;color:var(--dim)}
+.doclist div.on,.doclist div:hover{background:var(--side2);color:var(--text)}
+.doc{flex:1;background:var(--panel);border-radius:8px;padding:16px 20px;overflow:auto;white-space:normal}
+.doc pre{white-space:pre-wrap}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;z-index:10}
+#modal.on{display:flex}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;width:min(760px,100%);padding:18px}
+.mbox h2{margin:0 0 6px;font-size:18px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.ac label{display:flex;gap:8px;align-items:flex-start;padding:3px 0}
+.hist{font-size:12px;color:var(--dim);max-height:150px;overflow-y:auto}
+.muted{color:var(--dim)}
+.form label{display:block;font-size:12px;color:var(--dim);margin-top:8px}
+.form input,.form textarea,.form select{width:100%}
+@media (max-width:760px){
+  #chat aside{width:150px}
+  .doclist{width:130px}
+  header h1{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1 id="title">🎮 Studio</h1>
+    <span id="state" class="state running">running</span>
+    <nav id="tabs">
+      <button data-v="chat" class="on">💬 Chat</button>
+      <button data-v="board">📋 Board</button>
+      <button data-v="team">👥 Team</button>
+      <button data-v="approvals">🙋 Approvals<span id="apb"></span></button>
+      <button data-v="usage">📊 Usage</button>
+      <button data-v="docs">📄 Docs</button>
+    </nav>
+    <div class="spacer"></div>
+    <span class="chip" id="activeChip" title="Agents active in the last 90s (from transcripts)"></span>
+    <div class="progress" id="prog"></div>
+    <div class="ctl">
+      <button id="bPause">⏸ Pause</button>
+      <button id="bResume" class="good">▶ Resume</button>
+      <button id="bStop" class="bad">■ Stop</button>
+      <button id="bPlay" class="primary">🕹 Playtest</button>
+      <button id="bDir">📣 Directive</button>
+    </div>
+  </header>
+  <main>
+    <section id="chat" class="view on">
+      <aside>
+        <h3>Channels</h3><div id="chlist"></div>
+        <h3>Team</h3><div id="wholist"></div>
+      </aside>
+      <div class="chatmain">
+        <div class="chathead"><span id="chname">#general</span><small id="chdesc"></small></div>
+        <div id="msgs"></div>
+        <div class="compose">
+          <textarea id="ctext" placeholder="Message as Boss… (@role to mention, TICKET-1 to link, Enter to send, Shift+Enter newline)"></textarea>
+          <button class="primary" id="csend">Send</button>
+        </div>
+      </div>
+    </section>
+    <section id="board" class="view">
+      <div class="filters">
+        <input id="fq" placeholder="Search…">
+        <select id="fteam"><option value="">All teams</option></select>
+        <select id="fepic"><option value="">All epics</option></select>
+        <select id="fms"><option value="">All milestones</option></select>
+        <select id="fwho"><option value="">Anyone</option></select>
+        <div class="spacer"></div>
+        <button class="primary" id="bNew">+ New ticket</button>
+      </div>
+      <div class="cols" id="cols"></div>
+    </section>
+    <section id="team" class="view"><div class="grid" id="wgrid"></div></section>
+    <section id="approvals" class="view"><div id="aplist"></div></section>
+    <section id="usage" class="view"></section>
+    <section id="docs" class="view"><div class="docwrap"><div class="doclist" id="doclist"></div><div class="doc" id="doc"><span class="muted">Select a document.</span></div></div></section>
+  </main>
+</div>
+<div id="modal"><div class="mbox" id="mbox"></div></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const api = async (u, opt) => { const r = await fetch(u, opt); const j = await r.json().catch(() => ({})); if (!r.ok) { alert(j.error || r.statusText); throw new Error(j.error); } return j; };
+const post = (u, b) => api(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
+const ls = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+const COLORS = ['#e06c75', '#61afef', '#98c379', '#c678dd', '#d19a66', '#56b6c2', '#be5046', '#e5c07b', '#7f8fa6', '#ff79c6'];
+const color = (s) => { if (String(s).toLowerCase() === 'boss') return 'var(--boss)'; let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
+const TEAMC = { production: '#c678dd', design: '#e5c07b', engineering: '#61afef', art: '#e06c75', audio: '#56b6c2', qa: '#98c379', build: '#d19a66', narrative: '#ff79c6' };
+const CHDESC = { general: 'studio-wide announcements, Boss directives', production: 'planning, sprints, status', design: 'GDD, mechanics, balance, narrative', engineering: 'code, architecture, reviews', art: '2D/3D art, UI art, VFX', audio: 'music, SFX, voice', qa: 'test plans, bugs, verification', build: 'builds, exports, playtest drops', approvals: 'budget / login / download requests', blockers: 'blocked work, loops, lessons' };
+const fmtT = (ts) => { const d = new Date(ts); const today = new Date().toDateString() === d.toDateString(); return (today ? '' : d.toLocaleDateString() + ' ') + d.toTimeString().slice(0, 5); };
+const ago = (ts) => { const m = Math.round((Date.now() - ts) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : `${Math.round(m / 60)}h ago`; };
+
+let S = null; let view = ls.get('view', 'chat'); let channel = ls.get('channel', 'general');
+let seen = ls.get('seen', {}); let docSel = null;
+
+function rich(text) {
+  let h = esc(text);
+  h = h.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  const key = S?.config?.key || 'GAME';
+  h = h.replace(new RegExp(`\\b(${key}-\\d+)\\b`, 'g'), '<span class="tk" data-t="$1">$1</span>');
+  h = h.replace(/(^|\s)@([\w-]+)/g, '$1<span class="at">@$2</span>');
+  h = h.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  return h;
+}
+
+// ------------------------------------------------------------------ render
+async function load() {
+  S = await api('/api/state');
+  renderHeader();
+  if (view === 'chat') { renderChannels(); await renderMsgs(); }
+  if (view === 'board') renderBoard();
+  if (view === 'team') renderTeam();
+  if (view === 'approvals') renderApprovals();
+  if (view === 'docs') renderDocs();
+  if (view === 'usage') renderUsage();
+  renderChannels();
+}
+
+function renderHeader() {
+  $('#title').textContent = `🎮 ${S.config.name}`;
+  document.title = `${S.config.name} — Studio`;
+  const st = $('#state'); st.textContent = S.control.state; st.className = `state ${S.control.state}`;
+  const pend = S.approvals.filter((a) => a.status === 'pending').length;
+  $('#apb').innerHTML = pend ? `<span class="badge">${pend}</span>` : '';
+  const active = S.milestones.find((m) => m.status === 'active');
+  const ts = active ? S.tickets.filter((t) => t.milestone === active.id) : S.tickets;
+  const done = ts.filter((t) => t.status === 'done').length;
+  const pct = ts.length ? Math.round((done / ts.length) * 100) : 0;
+  $('#prog').innerHTML = `${active ? esc(active.name) : 'All tickets'} <span class="bar"><i style="width:${pct}%"></i></span> ${done}/${ts.length} · $${S.config.spent || 0}/$${S.config.budget || 0}`;
+  const act = liveRuns().filter((r) => r.state === 'active');
+  const chip = $('#activeChip');
+  chip.className = `chip ${act.length ? 'on' : ''}`;
+  chip.textContent = act.length ? `🟢 ${act.length} working: ${act.map((r) => r.name).join(', ')}` : '⚪ nobody working';
+  chip.title = `API-equivalent spend so far ≈ $${(S.usage?.totals?.cost || 0).toFixed(2)}`;
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === view));
+  document.querySelectorAll('.view').forEach((v) => v.classList.toggle('on', v.id === view));
+}
+
+// Latest transcript run per worker name (ground truth for "is it actually working").
+function liveRuns() {
+  const latest = {};
+  for (const r of S?.usage?.runs || []) if (!latest[r.name] || r.last > latest[r.name].last) latest[r.name] = r;
+  return Object.values(latest);
+}
+const runOf = (name) => liveRuns().find((r) => r.name === name);
+const usageOf = (list, key) => (S?.usage?.[list] || []).find((x) => x.key === key);
+const money = (n) => `$${(n || 0).toFixed(2)}`;
+const tok = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${Math.round(n / 1e3)}k` : String(Math.round(n || 0)));
+const dur = (ms) => { const m = Math.round(ms / 60000); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60}m`; };
+const agoS = (ts) => { const s = Math.round((Date.now() - ts) / 1000); return s < 60 ? `${s}s ago` : ago(ts); };
+
+function workerDot(w) {
+  if (w.state === 'paused' || w.state === 'stopped') return 'paused';
+  const r = runOf(w.name);
+  if (r) return r.state === 'active' ? 'live' : r.state === 'done' ? 'done' : r.state === 'stale' ? 'stale' : '';
+  if (w.state === 'done' || w.state === 'idle') return '';
+  return S.now - (w.lastPulse || 0) < 10 * 60000 ? 'live' : 'stale';
+}
+function allWorkers() {
+  const ws = { ...S.workers };
+  for (const r of liveRuns()) if (!ws[r.name]) ws[r.name] = { name: r.name, role: r.role, team: r.team };
+  return Object.values(ws);
+}
+
+function renderChannels() {
+  const chs = S.channels.filter((c) => !c.startsWith('dm-'));
+  const dms = S.channels.filter((c) => c.startsWith('dm-'));
+  const item = (c) => { const unread = c !== channel && (S.lastTs[c] || 0) > (seen[c] || 0); return `<div class="ch ${c === channel ? 'on' : ''} ${unread ? 'unread' : ''}" data-c="${esc(c)}"><span>${c.startsWith('dm-') ? '✉ ' + esc(c.slice(3)) : '# ' + esc(c)}</span>${unread ? '<span class="badge">•</span>' : ''}</div>`; };
+  $('#chlist').innerHTML = chs.map(item).join('') + (dms.length ? '<h3>Direct</h3>' + dms.map(item).join('') : '');
+  const rank = (w) => ({ live: 0, stale: 1, paused: 2 }[workerDot(w)] ?? 3);
+  const ws = allWorkers().sort((a, b) => rank(a) - rank(b) || (b.lastPulse || 0) - (a.lastPulse || 0));
+  $('#wholist').innerHTML = ws.map((w) => { const r = runOf(w.name); return `<div class="who" title="${esc(r?.lastAction || w.status || '')}"><span class="dot ${workerDot(w)}"></span>${esc(w.name)} <span class="muted" style="font-size:11px">${esc((r?.tickets || []).join(',') || w.role || '')}</span></div>`; }).join('') || '<div class="who muted">no workers yet</div>';
+}
+
+async function renderMsgs() {
+  $('#chname').textContent = channel.startsWith('dm-') ? `✉ ${channel.slice(3)}` : `#${channel}`;
+  $('#chdesc').textContent = CHDESC[channel] || '';
+  const box = $('#msgs');
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+  const ms = await api(`/api/messages?channel=${encodeURIComponent(channel)}`);
+  let prev = null;
+  box.innerHTML = ms.map((m) => {
+    const sys = m.kind === 'ticket' || m.role === 'system' || m.role === 'bot';
+    const mention = /@boss\b/i.test(m.text) || m.kind === 'approval' && /pending|🙋/.test(m.text);
+    const grouped = prev && prev.from === m.from && m.ts - prev.ts < 120000 && !sys;
+    prev = m;
+    const initials = String(m.from).split(/[-_ ]/).map((x) => x[0]).join('').slice(0, 2).toUpperCase();
+    return `<div class="msg ${sys ? 'sys' : ''} ${mention ? 'mention' : ''}">
+      <div class="av" style="background:${grouped ? 'transparent' : color(m.from)}">${grouped ? '' : esc(initials)}</div>
+      <div style="min-width:0">${grouped ? '' : `<div class="meta"><b>${esc(m.from)}</b>${m.role ? `<span class="role">${esc(m.role)}</span>` : ''}<span>${fmtT(m.ts)}</span></div>`}
+      <div class="body">${rich(m.text)}</div></div></div>`;
+  }).join('') || '<div class="muted" style="padding:16px">No messages yet.</div>';
+  if (atBottom || !box.dataset.ch || box.dataset.ch !== channel) box.scrollTop = box.scrollHeight;
+  box.dataset.ch = channel;
+  seen[channel] = S.lastTs[channel] || Date.now(); ls.set('seen', seen);
+}
+
+function filtered() {
+  const q = $('#fq').value.toLowerCase(); const team = $('#fteam').value; const epic = $('#fepic').value; const ms = $('#fms').value; const who = $('#fwho').value;
+  return S.tickets.filter((t) => (!q || (t.id + ' ' + t.title + ' ' + t.desc).toLowerCase().includes(q)) && (!team || t.team === team) && (!epic || t.epic === epic) && (!ms || t.milestone === ms) && (!who || t.assignee === who));
+}
+function fillSelect(sel, vals, label) {
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">${label}</option>` + vals.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('');
+  sel.value = cur;
+}
+function renderBoard() {
+  fillSelect($('#fteam'), [...new Set(S.tickets.map((t) => t.team))].map((x) => [x, x]), 'All teams');
+  fillSelect($('#fepic'), S.epics.map((e) => [e.id, `${e.id} ${e.name}`]), 'All epics');
+  fillSelect($('#fms'), S.milestones.map((m) => [m.id, `${m.id} ${m.name}`]), 'All milestones');
+  fillSelect($('#fwho'), [...new Set(S.tickets.map((t) => t.assignee).filter(Boolean))].map((x) => [x, x]), 'Anyone');
+  const ts = filtered();
+  const label = { backlog: 'Backlog', todo: 'To Do', in_progress: 'In Progress', review: 'Review', blocked: 'Blocked', done: 'Done' };
+  $('#cols').innerHTML = S.statuses.map((s) => {
+    const list = ts.filter((t) => t.status === s);
+    return `<div class="col" data-s="${s}"><h4><span>${label[s]}</span><span>${list.length}</span></h4><div class="list">${list.map(card).join('')}</div></div>`;
+  }).join('');
+}
+function card(t) {
+  const ac = t.acceptance || []; const d = ac.filter((a) => a.done).length;
+  const r = t.assignee && runOf(t.assignee);
+  const working = r && r.state === 'active' && r.tickets.includes(t.id);
+  const u = usageOf('byTicket', t.id);
+  return `<div class="card" draggable="true" data-t="${t.id}" style="border-left-color:${TEAMC[t.team] || 'var(--dim)'}${working ? ';box-shadow:0 0 0 1px var(--good)' : ''}">
+    <div class="id">${t.id} · ${esc(t.type)}${t.rejects ? ` · ↩${t.rejects}` : ''}${u ? ` · ${money(u.cost)}` : ''}</div>
+    <div class="t">${esc(t.title)}</div>
+    ${working ? `<div style="font-size:11px;color:#b8e6c9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🟢 ${esc(r.lastAction)}</div>` : ''}
+    <div class="f"><span class="pill ${t.priority}">${t.priority}</span><span class="pill">${esc(t.team)}</span>${t.assignee ? `<span class="pill">${working ? '🟢 ' : ''}@${esc(t.assignee)}</span>` : ''}${ac.length ? `<span class="pill">AC ${d}/${ac.length}</span>` : ''}${t.epic ? `<span class="pill">${esc(t.epic)}</span>` : ''}</div></div>`;
+}
+
+const tkLinks = (ids) => ids.map((id) => { const t = S.tickets.find((x) => x.id === id); return `<div style="margin-top:4px"><span class="tk" data-t="${esc(id)}">${esc(id)}</span> ${esc(t ? t.title : '')} ${t ? `<span class="pill">${esc(t.status)}</span>` : ''}</div>`; }).join('');
+
+function renderTeam() {
+  const runs = liveRuns();
+  const active = runs.filter((r) => r.state === 'active');
+  const now = active.map((r) => `<div class="now">
+      <div style="display:flex;gap:10px;align-items:center"><div class="av" style="background:${color(r.name)}">${esc(r.name.slice(0, 2).toUpperCase())}</div>
+      <div><b>${esc(r.name)}</b> <span class="muted">${esc(r.role || '')} · ${esc(r.team)}</span><br>
+      <span class="muted">working ${dur(Date.now() - r.start)} · ${r.toolCalls} actions · ${tok(r.total)} tok · ${money(r.cost)}</span></div></div>
+      ${tkLinks(r.tickets)}
+      <div class="act" title="${esc(r.lastAction)}">▶ ${esc(r.lastAction || '(thinking)')} <span class="muted">${r.lastActionTs ? agoS(r.lastActionTs) : ''}</span></div></div>`).join('');
+  const teams = {};
+  for (const w of allWorkers()) (teams[w.team || runOf(w.name)?.team || 'other'] ||= []).push(w);
+  const sections = Object.keys(teams).sort().map((team) => {
+    const tu = usageOf('byTeam', team);
+    const cards = teams[team].sort((a, b) => (runOf(b.name)?.last || b.lastPulse || 0) - (runOf(a.name)?.last || a.lastPulse || 0)).map((w) => {
+      const r = runOf(w.name); const u = usageOf('byWorker', w.name);
+      const st = w.state === 'paused' || w.state === 'stopped' ? w.state : r ? { active: 'working now', done: 'finished', stale: 'no activity >90s', idle: 'idle' }[r.state] : (w.state || 'checked in');
+      const tks = r?.tickets?.length ? r.tickets : (w.ticket ? [w.ticket] : []);
+      return `<div class="wcard"><div class="top"><div class="av" style="background:${color(w.name)}">${esc(w.name.slice(0, 2).toUpperCase())}</div>
+        <div><b>${esc(w.name)}</b><br><span class="muted">${esc(w.role || r?.role || '?')}</span></div><div class="spacer"></div><span class="dot ${workerDot(w)}"></span></div>
+        <div class="st">${esc(st)} · ${ago(Math.max(r?.last || 0, w.lastPulse || 0))}${u ? ` · ${tok(u.total)} tok · <b>${money(u.cost)}</b> over ${Math.round(u.runs)} run(s)` : ''}</div>
+        ${tkLinks(tks)}
+        ${r?.lastAction ? `<div class="last">last action: ${esc(r.lastAction)}</div>` : w.status ? `<div class="last">${esc(w.status)}</div>` : ''}
+        <div class="row"><button data-dm="${esc(w.name)}">✉ DM</button></div></div>`;
+    }).join('');
+    return `<div class="teamh"><span style="width:10px;height:10px;border-radius:2px;background:${TEAMC[team] || 'var(--dim)'}"></span>${esc(team)} <span class="muted" style="text-transform:none">${teams[team].length} member(s)${tu ? ` · ${money(tu.cost)}` : ''}</span></div><div class="grid">${cards}</div>`;
+  }).join('');
+  $('#team').innerHTML = `<h3 style="margin:0">🟢 Working right now (${active.length})</h3>
+    ${active.length ? `<div class="grid">${now}</div>` : '<div class="muted">Nobody is actively working. Activity is read live from Claude Code transcripts (active = transcript updated in the last 90s).</div>'}
+    ${sections || '<div class="muted">No workers yet.</div>'}`;
+}
+
+function usageTable(title, rows, linkTickets = false) {
+  const max = Math.max(0.0001, ...rows.map((r) => r.cost));
+  return `<div class="panel"><h3>${title}</h3><table class="tbl"><tr><th></th><th>tokens</th><th>≈ cost</th><th style="width:40%"></th></tr>
+    ${rows.map((r) => { const t = linkTickets && S.tickets.find((x) => x.id === r.key); return `<tr><td>${t ? `<span class="tk" data-t="${esc(r.key)}">${esc(r.key)}</span> <span class="muted">${esc(t.title.slice(0, 40))}</span>` : esc(r.key)}</td>
+      <td class="num">${tok(r.total)}</td><td class="num">${money(r.cost)}</td><td><div class="hbar" style="width:${(r.cost / max) * 100}%"></div></td></tr>`; }).join('') || '<tr><td class="muted">no data</td></tr>'}</table></div>`;
+}
+function renderUsage() {
+  const u = S.usage || { totals: { total: 0, cost: 0, tokens: {} }, runs: [] };
+  const tt = u.totals.tokens || {};
+  const cacheShare = u.totals.total ? Math.round(((tt.cacheRead || 0) / u.totals.total) * 100) : 0;
+  $('#usage').innerHTML = `<div class="tiles">
+      <div class="tile"><span class="muted">≈ spend (API list price)</span><b>${money(u.totals.cost)}</b></div>
+      <div class="tile"><span class="muted">tokens</span><b>${tok(u.totals.total)}</b></div>
+      <div class="tile"><span class="muted">output tokens</span><b>${tok(tt.output || 0)}</b></div>
+      <div class="tile"><span class="muted">cache-read share</span><b>${cacheShare}%</b></div>
+      <div class="tile"><span class="muted">agent runs</span><b>${u.runs.filter((r) => r.kind === 'agent').length}</b></div>
+      <div class="tile"><span class="muted">working now</span><b>${(u.active || []).length}</b></div></div>
+    <div class="muted" style="font-size:12px">${esc(u.note || '')} One agent run spanning several tickets splits its cost evenly. Producer = main Claude session since the studio was created.</div>
+    <div class="ugrid">${usageTable('By team', u.byTeam || [])}${usageTable('By worker', u.byWorker || [])}${usageTable('By milestone', u.byMilestone || [])}${usageTable('By ticket', u.byTicket || [], true)}</div>
+    <div class="panel"><h3>Agent runs</h3><table class="tbl"><tr><th>worker</th><th>tickets</th><th>model</th><th>state</th><th>duration</th><th>actions</th><th>tokens</th><th>≈ cost</th></tr>
+    ${u.runs.map((r) => `<tr><td>${esc(r.name)}</td><td>${r.tickets.map((k) => `<span class="tk" data-t="${esc(k)}">${esc(k)}</span>`).join(' ') || '-'}</td><td class="muted">${esc(r.model || '')}</td>
+      <td><span class="dot ${r.state === 'active' ? 'live' : r.state === 'done' ? 'done' : r.state === 'stale' ? 'stale' : ''}" style="display:inline-block"></span> ${esc(r.state)}</td>
+      <td class="num">${dur((r.finished || r.last) - r.start)}</td><td class="num">${r.toolCalls}</td><td class="num">${tok(r.total)}</td><td class="num">${money(r.cost)}</td></tr>`).join('')}</table></div>`;
+}
+
+function renderApprovals() {
+  const as = [...S.approvals].reverse();
+  $('#aplist').innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">${as.map((a) => `<div class="appr">
+    <div class="what"><b>${a.id}</b> <span class="pill">${esc(a.kind)}</span> ${a.cost ? `<b>$${a.cost}</b>` : ''} ${esc(a.what)}<br>
+    <span class="muted">by ${esc(a.by)} ${a.ticket ? '· ' + esc(a.ticket) : ''} · ${fmtT(a.ts)}${a.why ? ' — ' + esc(a.why) : ''}</span>
+    ${a.note ? `<br><span class="muted">note: ${esc(a.note)}</span>` : ''}</div>
+    ${a.status === 'pending' ? `<input placeholder="note (optional)" id="n-${a.id}"><button class="good" data-ap="${a.id}" data-st="approved">Approve</button><button class="bad" data-ap="${a.id}" data-st="denied">Deny</button>` : `<span class="state ${a.status === 'approved' ? 'running' : 'stopped'}">${a.status}</span>`}
+  </div>`).join('') || '<div class="muted">No requests. Workers ask here before spending money, logging in, or downloading models.</div>'}</div>`;
+}
+
+async function renderDocs() {
+  $('#doclist').innerHTML = S.docs.map((d) => `<div class="${d === docSel ? 'on' : ''}" data-d="${esc(d)}">${esc(d)}</div>`).join('');
+  if (docSel) {
+    const txt = await fetch(`/api/doc?name=${encodeURIComponent(docSel)}`).then((r) => r.text());
+    $('#doc').innerHTML = md(txt);
+  }
+}
+function md(src) {
+  const lines = esc(src).split('\n'); let out = ''; let inCode = false; let inList = false;
+  for (const l of lines) {
+    if (l.startsWith('```')) { if (inList) { out += '</ul>'; inList = false; } out += inCode ? '</pre>' : '<pre>'; inCode = !inCode; continue; }
+    if (inCode) { out += l + '\n'; continue; }
+    const li = l.match(/^\s*[-*] (.*)/);
+    if (li) { if (!inList) { out += '<ul>'; inList = true; } out += `<li>${inline(li[1])}</li>`; continue; }
+    if (inList) { out += '</ul>'; inList = false; }
+    const h = l.match(/^(#{1,4}) (.*)/);
+    if (h) out += `<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`;
+    else if (l.trim()) out += `<p>${inline(l)}</p>`;
+  }
+  return out + (inList ? '</ul>' : '') + (inCode ? '</pre>' : '');
+}
+const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+
+// ------------------------------------------------------------------ modals
+function modal(html) { $('#mbox').innerHTML = html; $('#modal').classList.add('on'); }
+function closeModal() { $('#modal').classList.remove('on'); }
+$('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal')closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape')closeModal(); });
+
+async function openTicket(id) {
+  const t = await api(`/api/tickets/${id}`);
+  if (!t) return;
+  const acts = await api(`/api/messages?ticket=${id}`);
+  modal(`<div class="row"><h2 style="flex:1">${t.id} · ${esc(t.title)}</h2><button onclick="closeModal()">✕</button></div>
+    <div class="row">
+      <select id="tStatus">${S.statuses.map((s) => `<option ${s === t.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+      <select id="tPri">${['P0', 'P1', 'P2', 'P3'].map((p) => `<option ${p === t.priority ? 'selected' : ''}>${p}</option>`).join('')}</select>
+      <span class="pill">${esc(t.type)}</span><span class="pill">team ${esc(t.team)}</span>
+      <input id="tWho" value="${esc(t.assignee)}" placeholder="assignee" style="width:140px">
+      <span class="pill">epic ${esc(t.epic || '-')}</span><span class="pill">ms ${esc(t.milestone || '-')}</span>
+      ${t.rejects ? `<span class="pill P1">review rejects ${t.rejects}</span>` : ''}
+    </div>
+    ${t.desc ? `<p>${rich(t.desc)}</p>` : ''}
+    ${t.deps?.length ? `<p class="muted">Depends on: ${t.deps.map((d) => `<span class="tk" data-t="${d}">${d}</span>`).join(' ')}</p>` : ''}
+    <h4>Acceptance criteria</h4><div class="ac">${(t.acceptance || []).map((a, i) => `<label><input type="checkbox" data-ac="${i}" ${a.done ? 'checked' : ''}> ${esc(a.text)}</label>`).join('') || '<span class="muted">none — add some so "done" is unambiguous</span>'}</div>
+    ${t.links?.length ? `<h4>Links / evidence</h4><div>${t.links.map((l) => `<div class="muted">${rich(l)}</div>`).join('')}</div>` : ''}
+    <h4>Comments</h4><div>${(t.comments || []).map((c) => `<div><b>${esc(c.by)}</b> <span class="muted">${fmtT(c.ts)}</span><div class="body">${rich(c.text)}</div></div>`).join('') || '<span class="muted">none</span>'}</div>
+    <div class="row"><textarea id="tCom" style="flex:1;height:50px" placeholder="Comment as Boss (also posted to #production)…"></textarea><button class="primary" id="tComB">Comment</button></div>
+    <div class="row"><button class="primary" id="tSave">Save changes</button></div>
+    <h4>Activity</h4><div class="hist">${(t.history || []).slice().reverse().map((h) => `<div>${fmtT(h.ts)} <b>${esc(h.by)}</b> ${esc(h.what)}</div>`).join('')}
+    ${acts.slice().reverse().slice(0, 40).map((m) => `<div>${fmtT(m.ts)} #${esc(m.channel)} <b>${esc(m.from)}</b>: ${esc(m.text).slice(0, 200)}</div>`).join('')}</div>`);
+  $('#mbox').querySelectorAll('[data-ac]').forEach((cb) => cb.addEventListener('change', () => post(`/api/tickets/${id}/check`, { index: cb.dataset.ac, done: cb.checked })));
+  $('#tComB').onclick = async () => { const v = $('#tCom').value.trim(); if (v) { await post(`/api/tickets/${id}/comment`, { text: v }); openTicket(id); } };
+  $('#tSave').onclick = async () => {
+    await post(`/api/tickets/${id}`, { priority: $('#tPri').value, assignee: $('#tWho').value.trim() });
+    if ($('#tStatus').value !== t.status) await post(`/api/tickets/${id}/move`, { status: $('#tStatus').value, note: 'moved by Boss' });
+    closeModal();
+  };
+}
+
+function newTicket() {
+  modal(`<h2>New ticket</h2><div class="form">
+    <label>Title</label><input id="nT">
+    <div class="row"><div style="flex:1"><label>Team</label><select id="nTeam">${Object.keys(TEAMC).map((t) => `<option>${t}</option>`).join('')}</select></div>
+    <div style="flex:1"><label>Type</label><select id="nType">${['feature', 'bug', 'art', 'audio', 'design', 'chore', 'spike', 'build', 'qa'].map((t) => `<option>${t}</option>`).join('')}</select></div>
+    <div style="flex:1"><label>Priority</label><select id="nP"><option>P1</option><option selected>P2</option><option>P0</option><option>P3</option></select></div></div>
+    <div class="row"><div style="flex:1"><label>Epic</label><select id="nE"><option value=""></option>${S.epics.map((e) => `<option value="${e.id}">${e.id} ${esc(e.name)}</option>`).join('')}</select></div>
+    <div style="flex:1"><label>Milestone</label><select id="nM"><option value=""></option>${S.milestones.map((m) => `<option value="${m.id}">${m.id} ${esc(m.name)}</option>`).join('')}</select></div></div>
+    <label>Description</label><textarea id="nD" rows="3"></textarea>
+    <label>Acceptance criteria (one per line)</label><textarea id="nA" rows="4"></textarea>
+    <div class="row"><button class="primary" id="nGo">Create</button><button onclick="closeModal()">Cancel</button></div></div>`);
+  $('#nGo').onclick = async () => {
+    if (!$('#nT').value.trim()) return;
+    await post('/api/tickets', { title: $('#nT').value.trim(), team: $('#nTeam').value, type: $('#nType').value, priority: $('#nP').value, epic: $('#nE').value, milestone: $('#nM').value, desc: $('#nD').value, acceptance: $('#nA').value.split('\n').map((x) => x.trim()).filter(Boolean) });
+    closeModal();
+  };
+}
+
+// ------------------------------------------------------------------ events
+$('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; view = b.dataset.v; ls.set('view', view); load(); });
+$('#chlist').addEventListener('click', (e) => { const c = e.target.closest('.ch'); if (!c) return; channel = c.dataset.c; ls.set('channel', channel); load(); });
+document.addEventListener('click', (e) => {
+  const tk = e.target.closest('.tk'); if (tk) { openTicket(tk.dataset.t); return; }
+  const cd = e.target.closest('.card'); if (cd) { openTicket(cd.dataset.t); return; }
+  const dm = e.target.closest('[data-dm]'); if (dm) { channel = `dm-${dm.dataset.dm.toLowerCase().replace(/[^a-z0-9_-]/g, '-')}`; view = 'chat'; ls.set('view', view); ls.set('channel', channel); load(); return; }
+  const ap = e.target.closest('[data-ap]'); if (ap) { post(`/api/approvals/${ap.dataset.ap}`, { status: ap.dataset.st, note: ($(`#n-${ap.dataset.ap}`) || {}).value || '' }); return; }
+  const d = e.target.closest('[data-d]'); if (d) { docSel = d.dataset.d; renderDocs(); }
+});
+async function send() {
+  const v = $('#ctext').value.trim(); if (!v) return;
+  $('#ctext').value = '';
+  await post('/api/messages', { channel, text: v });
+}
+$('#csend').onclick = send;
+$('#ctext').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+$('#bPause').onclick = () => post('/api/control', { state: 'paused' });
+$('#bResume').onclick = () => post('/api/control', { state: 'running' });
+$('#bStop').onclick = () => { if (confirm('Stop all studio work?')) post('/api/control', { state: 'stopped' }); };
+$('#bPlay').onclick = () => post('/api/control', { playtest: true });
+$('#bDir').onclick = () => {
+  modal(`<h2>📣 Directive</h2><div class="form"><label>To (all, a worker name, role, or team)</label><input id="dTo" value="all">
+    <label>Directive</label><textarea id="dTx" rows="4" placeholder="e.g. Switch art style to pixel art; stop work on multiplayer"></textarea>
+    <div class="row"><button class="primary" id="dGo">Send</button><button onclick="closeModal()">Cancel</button></div></div>`);
+  $('#dGo').onclick = async () => { const t = $('#dTx').value.trim(); if (t) { await post('/api/control', { directive: t, to: $('#dTo').value.trim() || 'all' });closeModal(); } };
+};
+['#fq', '#fteam', '#fepic', '#fms', '#fwho'].forEach((s) => $(s).addEventListener('input', renderBoard));
+$('#bNew').onclick = newTicket;
+$('#activeChip').onclick = () => { view = 'team'; ls.set('view', view); load(); };
+
+// drag & drop on board
+let dragId = null;
+document.addEventListener('dragstart', (e) => { const c = e.target.closest('.card'); if (c) { dragId = c.dataset.t; e.dataTransfer.effectAllowed = 'move'; } });
+document.addEventListener('dragover', (e) => { const col = e.target.closest('.col'); if (col && dragId) { e.preventDefault(); document.querySelectorAll('.col').forEach((c) => c.classList.toggle('drop', c === col)); } });
+document.addEventListener('drop', async (e) => {
+  const col = e.target.closest('.col'); document.querySelectorAll('.col').forEach((c) => c.classList.remove('drop'));
+  if (col && dragId) { e.preventDefault(); const id = dragId; dragId = null; await post(`/api/tickets/${id}/move`, { status: col.dataset.s, note: 'moved by Boss' }).catch(() => {}); }
+});
+document.addEventListener('dragend', () => { dragId = null; document.querySelectorAll('.col').forEach((c) => c.classList.remove('drop')); });
+
+// live updates
+function connect() {
+  const es = new EventSource('/api/events');
+  es.addEventListener('change', () => { if (!$('#modal').classList.contains('on') || view !== 'board') load(); });
+  es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+}
+setInterval(() => { if (S && view === 'team') { S.now = Date.now(); renderTeam(); } }, 30000);
+load().then(connect);
+</script>
+</body>
+</html>

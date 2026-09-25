@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0B1026">
+  <title>Mothlight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Mothlight: hold to glow, move to guide the moths, let go under the moon"></canvas>
+
+  <!-- JAM-17: gentle rotate hint, shown only on the title screen in narrow portrait (main.js toggles `hidden`). -->
+  <div id="rotate-hint" class="rotate-hint" hidden aria-hidden="true">
+    <div class="rotate-hint__icon"></div>
+    <p>turn your phone</p>
+  </div>
+
+  <div id="serve-notice" class="notice" hidden>
+    Mothlight needs to be served over http (ES modules do not load from <code>file://</code>).<br>
+    From the <code>Game/</code> folder run <code>python -m http.server 8080</code>, then open
+    <code>http://localhost:8080/</code>.
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    // If main.js never ran (file:// or a module load error), say why instead of showing a blank page.
+    setTimeout(function () {
+      if (!window.__mothlightBooted) document.getElementById('serve-notice').hidden = false;
+    }, 1500);
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "Untitled Game",
+  "key": "GAME",
+  "engine": "godot",
+  "tier": "indie",
+  "platforms": [
+    "windows"
+  ],
+  "budget": 0,
+  "spent": 0,
+  "maxConcurrentWorkers": 4,
+  "port": 4747,
+  "approvedTools": [
+    "free-assets",
+    "blender-mcp",
+    "comfyui-local",
+    "web"
+  ],
+  "nextTicket": 1,
+  "engines": {
+    "godot": "",
+    "unityHub": "",
+    "unreal": "",
+    "blender": "",
+    "comfyui": ""
+  }
+}
