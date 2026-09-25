@@ -130,6 +130,9 @@ Details: `playbooks/assets-*.md`. Licenses other than CC0/CC-BY/MIT need Boss ap
   `playbooks/*.md` / `roles/*.md` / this file (keep them short; replace wrong advice, don't append noise) →
   mark lesson `status: FOLDED into <file>` → add a line to the Changelog below → post retro to #production
   including `$CLI usage` highlights (most expensive tickets and why — rework loops show up here).
+- The skill folder is a git repo (public). After a retro, commit the skill changes locally with the Boss's git
+  identity and no AI co-author/attribution lines; **push only after Boss approves** (`approval request "Push skill vX.Y" --kind gate`).
+  Never commit game projects, `.studio/` state, or personal paths into the skill repo.
 - If the CLI/server itself has a bug: fix `server/*.js`, run `node server/studio.js help` + a smoke test, record lesson.
 
 ## 8. Scale
