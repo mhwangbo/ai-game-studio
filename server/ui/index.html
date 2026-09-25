@@ -202,7 +202,7 @@ const fmtT = (ts) => { const d = new Date(ts); const today = new Date().toDateSt
 const ago = (ts) => { const m = Math.round((Date.now() - ts) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : `${Math.round(m / 60)}h ago`; };
 
 let S = null; let view = ls.get('view', 'chat'); let channel = ls.get('channel', 'general');
-let seen = ls.get('seen', {}); let docSel = null;
+let seen = ls.get('seen', {}); let docSel = null; const visitFloor = {};
 
 function rich(text) {
   let h = esc(text);
@@ -217,6 +217,8 @@ function rich(text) {
 // ------------------------------------------------------------------ render
 async function load() {
   S = await api('/api/state');
+  // Server-side read markers are the source of truth; localStorage is only a fallback cache.
+  for (const [c, ts] of Object.entries(S.read || {})) if (ts > (seen[c] || 0)) seen[c] = ts;
   renderHeader();
   if (view === 'chat') { renderChannels(); await renderMsgs(); }
   if (view === 'board') renderBoard();
@@ -289,10 +291,15 @@ async function renderMsgs() {
   const box = $('#msgs');
   const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   const ms = await api(`/api/messages?channel=${encodeURIComponent(channel)}`);
+  // Highlight only mentions that arrived after Boss last read this channel. The floor is fixed when
+  // entering the channel so new mentions stay highlighted during this visit but not after a refresh.
+  const entering = box.dataset.ch !== channel;
+  if (entering) visitFloor[channel] = seen[channel] || 0;
   let prev = null;
   box.innerHTML = ms.map((m) => {
     const sys = m.kind === 'ticket' || m.role === 'system' || m.role === 'bot';
-    const mention = /@boss\b/i.test(m.text) || m.kind === 'approval' && /pending|🙋/.test(m.text);
+    const isNew = m.ts > (visitFloor[channel] || 0);
+    const mention = isNew && (/@boss\b/i.test(m.text) || (m.kind === 'approval' && /pending|🙋/.test(m.text)));
     const grouped = prev && prev.from === m.from && m.ts - prev.ts < 120000 && !sys;
     prev = m;
     const initials = String(m.from).split(/[-_ ]/).map((x) => x[0]).join('').slice(0, 2).toUpperCase();
@@ -301,9 +308,14 @@ async function renderMsgs() {
       <div style="min-width:0">${grouped ? '' : `<div class="meta"><b>${esc(m.from)}</b>${m.role ? `<span class="role">${esc(m.role)}</span>` : ''}<span>${fmtT(m.ts)}</span></div>`}
       <div class="body">${rich(m.text)}</div></div></div>`;
   }).join('') || '<div class="muted" style="padding:16px">No messages yet.</div>';
-  if (atBottom || !box.dataset.ch || box.dataset.ch !== channel) box.scrollTop = box.scrollHeight;
+  if (atBottom || entering) box.scrollTop = box.scrollHeight;
   box.dataset.ch = channel;
-  seen[channel] = S.lastTs[channel] || Date.now(); ls.set('seen', seen);
+  const readTs = S.lastTs[channel] || 0;
+  if (readTs > (seen[channel] || 0)) { seen[channel] = readTs; ls.set('seen', seen); }
+  if (readTs > ((S.read || {})[channel] || 0)) {
+    S.read = { ...(S.read || {}), [channel]: readTs };
+    post('/api/read', { channel, ts: readTs }).catch(() => {});
+  }
 }
 
 function filtered() {

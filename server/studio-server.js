@@ -98,6 +98,7 @@ function state() {
     control: studio.control(),
     channels: studio.channels(),
     lastTs: unreadBase,
+    read: studio.readJSON('boss-read.json', {}),
     tickets: studio.listTickets({}),
     workers: studio.workers(),
     approvals: studio.readJSON('approvals.json', []),
@@ -124,6 +125,15 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     if (p === '/api/state') return send(res, 200, state());
+    // Boss read markers live server-side so unread badges/mentions survive refreshes and browser changes.
+    if (p === '/api/read' && req.method === 'POST') {
+      const b = await body(req);
+      const ch = String(b.channel || '');
+      const ts = Number(b.ts) || 0;
+      const read = studio.readJSON('boss-read.json', {});
+      if (ch && ts > (read[ch] || 0)) { read[ch] = ts; studio.writeJSON('boss-read.json', read); }
+      return send(res, 200, read);
+    }
     if (p === '/api/messages' && req.method === 'GET') {
       const ch = url.searchParams.get('channel');
       const ticket = url.searchParams.get('ticket');

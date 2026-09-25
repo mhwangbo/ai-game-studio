@@ -68,3 +68,9 @@ Format (written by `studio.js lesson add`): date, [area], symptom, cause, fix, b
 - fix: QA: save a canvas shot via the POST receiver, crop the text block with PIL, and pixel-sample props vs bare scrim; test 2+ seeds and the mobile preset
 - by: qa-1 (project: Mothlight)
 - status: FOLDED into playbooks/qa-automation.md
+
+### 2026-09-25 [tooling] Dashboard unread badges and @Boss highlights came back after refresh
+- cause: Read state lived only in browser localStorage (lost across browsers/panes/cleared storage) and mention highlight ignored read state
+- fix: Server-side read markers in .studio/boss-read.json via POST /api/read; highlight only mentions newer than the read marker captured when entering the channel
+- by: producer (project: Mothlight)
+- status: FIXED in server/studio-server.js + server/ui/index.html
