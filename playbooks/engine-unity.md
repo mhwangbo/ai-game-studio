@@ -8,6 +8,11 @@ Create project: `"$UNITY" -batchmode -quit -createProject <path> -logFile -`, pa
 - Tests: `"$UNITY" -batchmode -nographics -projectPath <proj> -runTests -testPlatform EditMode -testResults Builds/tests.xml -logFile -` (no `-quit` with -runTests).
 - Build: `BuildPipeline.BuildPlayer` inside executeMethod → `Builds/<platform>/`.
 
+## Playtest bots (optional, with playtest-lab skill)
+Add the `com.playtestlab.bridge` package from playtest-lab (`engines/unity`) and one `IPlaytestTarget`
+(feed actions into the input layer; seed all randomness in `ResetGame`) as a tech-lead ticket in milestone 1.
+Bots then play Windows player builds headless and deterministically at every playtest gate.
+
 ## Gotchas
 - One Unity instance per project: if Boss has the editor open, batchmode fails. Ask Boss to close it or use editor-side scripts.
 - Scene/prefab YAML is fragile to hand-edit; generate via editor scripts.
