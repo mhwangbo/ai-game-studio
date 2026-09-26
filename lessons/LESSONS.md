@@ -74,3 +74,123 @@ Format (written by `studio.js lesson add`): date, [area], symptom, cause, fix, b
 - fix: Server-side read markers in .studio/boss-read.json via POST /api/read; highlight only mentions newer than the read marker captured when entering the channel
 - by: producer (project: Mothlight)
 - status: FIXED in server/studio-server.js + server/ui/index.html
+
+### 2026-09-26 [tooling] Dashboard for a new game failed: port 4747 busy (an older game's studio server from another session still running)
+- cause: every project defaults to port 4747; old servers keep running across sessions
+- fix: Set a free port per project (config --set port=4748) and start the server again; don't kill another session's server
+- by: producer (project: GodotJam01)
+- status: FOLDED into server/studio-server.js (auto free port) + SKILL.md §1 (fold into playbook at next retro)
+
+### 2026-09-26 [process] Design spec: ships with a random inward heading jitter can miss a small central target (closest approach R*sin(jitter) > target radius), which breaks 'every ship reaches the reef' and radius invariants
+- cause: Straight-line heading fixed at spawn instead of re-aiming each tick
+- fix: Specify spiral motion: recompute heading each tick as inward radial rotated by a fixed drift, so radius strictly decreases; check R*sin(jitter) vs target radius when writing specs
+- by: gd-1 (project: GodotJam01)
+- status: FOLDED into roles/game-designer.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Unsure whether Boss-standard triple-quoted """docstrings""" are legal at class level in Godot 4 GDScript
+- cause: Godot 4 native doc comments are ##; standalone strings at class scope looked risky
+- fix: Verified on 4.6.1: """...""" above class_name and above funcs parses with no errors or warnings; use it per Boss standard
+- by: tl-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Space both starts the night from the title and fires a flare; the held key burned the first flare charge on tick 1
+- cause: Title start is an input event, but the sim action polls Input.is_action_pressed every tick, so the same press is seen twice
+- fix: GameFlow masks flare in the action until the key is released once after a night starts (_flare_armed); test with InputEventAction via Input.parse_input_event in a -s SceneTree script with --fixed-fps 60
+- by: ui-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Threshold rules on accumulated floats (guidance += 1/60 sixty times, spawn at tick*dt >= 1.5) fired one tick late on some values
+- cause: Summing 1/60 or tick*(1/60) lands a hair under the exact threshold in float64
+- fix: Compare with a tiny epsilon (x >= 1.0 - 1e-9) and derive end times from integer ticks (dawn_tick = ceil(dawn_time*hz)); unit-test the exact tick count
+- by: gp-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Playtest bridge: sim would advance one extra tick on reset, making lab tick count != frames stepped
+- cause: PlaytestBridge unpauses the tree for one frame after reset to poll is_ready(); a target stepping in _physics_process advances during that frame
+- fix: Target stays unarmed after reset_game and only steps after the first apply_action; self-check invariant compares physics ticks vs _process frames vs sim.get_tick() (NIGHTBEAM PlaytestTarget.gd)
+- by: eng-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md + playtest-lab 0.2.1 (fold into playbook at next retro)
+
+### 2026-09-26 [design] Skill gradient (survival-time ratio) stuck at ~1.1x; the weak bot still survived ~150 s even as its win rate fell
+- cause: Linear ramp from 0 + 5 hull: the weak bot's deaths pile up late, and survival time is capped at dawn, so the time ratio saturates. Tuning lethality alone moves the win rate, not the time
+- fix: Front-load the threat that separates skills (offset the ramp, e.g. negative start time) and give the skilled play a counter-lever (shorter hazard lifetime so waiting it out works). Check a holdout seed range before calling it done
+- by: gd-1 (project: GodotJam01)
+- status: FOLDED into roles/game-designer.md (fold into playbook at next retro)
+
+### 2026-09-26 [qa] lab check reported careful.won 0.60->0.77 and careful.lost DOWN as 'regressed' (0 improved): every improvement shows up as a regression
+- cause: .playtest/config.json has no check block, so no metric has a 'better' direction; with the default tolerance, any move in either direction is a regression
+- fix: When the lab baseline is set (GJ-6-type ticket), also write check.metrics better-directions (won/score/saved higher; lost lower). Add this to the playbook Regression gate 'Run' step
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/qa-automation.md + roles/tech-lead.md (fold into playbook at next retro)
+
+### 2026-09-26 [qa] random.saved 1.83->1.53 (about 9 saves over 30 runs) failed the gate; with a relative 10% tolerance, near-zero means on idle/random flag noise
+- cause: the default tolerance is relative (0.1 x mean) with abs 0, which is tiny for metrics whose mean is near 0 and gives false-positive 'unintended' rows
+- fix: Set check.abs (e.g. 0.5 saves / 5 score) or per-metric tolerance for idle/random in .playtest/config.json at baseline time; the playbook should say to
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/qa-automation.md (fold into playbook at next retro)
+
+### 2026-09-26 [qa] the intended-change path is hard to apply strictly: the designer's intent was prose on the ticket, and some failing metrics were not mentioned (greedy.hull, careful.flares_used) or moved past the declared range (careful.won)
+- cause: no structured format for declaring intended moves, so QA has to guess whether a side effect (hull when lost goes up) counts as intended
+- fix: Playbook: the designer declares intent as a metric list 'policy.metric: up|down|flat [range]' covering EVERY metric of the affected policies; QA diffs check.json against it mechanically
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/qa-automation.md + roles/game-designer.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] GJ-5 screenshot helper fed fake observations, and a fixed-time real-sim shot showed no Shade (the only Shade spawned that tick on the rim at age 0)
+- cause: the view was verified before the sim existed; a real-sim shot at a fixed time depends on spawn luck
+- fix: Real-sim visual check: .studio/qa/GJ-8-Play.gd.txt (windowed opengl3 --fixed-fps 60 --disable-vsync, input-driven) shoots at the first frame after --shot_time with 2 settled ships (1 mid-guidance) and a Shade aged 1.5 s or more, then dumps entities for cross-checking
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/qa-automation.md (fold into playbook at next retro)
+
+### 2026-09-26 [qa] The confirm check after a re-baseline passed trivially (R4 identical to R3, 27 ok): with deterministic bots on the same seeds, it proves nothing about the new config rules
+- cause: check reruns the baseline seeds, and the sim is deterministic, so a rerun matches exactly unless the build changed
+- fix: Treat the confirm check as a wiring check only. To test config.check rules, use the designer's offline compare (baseline vs an old run, e.g. R1 vs R3 must fail) or a --seed offset / holdout run; the playbook could add a 'lab check --run <old>' dry-compare
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/qa-automation.md + playtest-lab 0.2.1 (check --seed) (fold into playbook at next retro)
+
+### 2026-09-26 [tooling] lab.js host: second host session in the same run overwrote shots/001.png from the first
+- cause: host.js restarts its screenshot counter at 1 on every launch and writes into runs/<RUN>/shots/
+- fix: Copy evidence screenshots out (e.g. .studio/qa/) before restarting the host, or run 'lab.js run new' per session; lab fix: continue numbering from existing files
+- by: eng-1 (project: GodotJam01)
+- status: FOLDED into playtest-lab 0.2.1 (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Headless GDScript bot sweep on WorkerThreadPool got no faster with 16 threads (22 s, same as 1 thread)
+- cause: Engine-side contention when many threads run GDScript at once; 4 threads gave 2.4x, 6-8 got slower again
+- fix: Use a small fixed pool (4) for independent RefCounted sims, keep results in job order behind a Mutex, and prove the CSV is byte-identical to --threads=1
+- by: gp-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (fold into playbook at next retro)
+
+### 2026-09-26 [godot] Headless Main.tscn run printed 'ObjectDB instances leaked at exit' (AudioStreamWAV/AudioStreamPlaybackWAV) after adding one-shot SFX
+- cause: The Dummy audio driver used by --headless never releases playbacks that were started; stop() in _exit_tree does not help
+- fix: Skip play() when AudioServer.get_driver_name() == 'Dummy' (no audio in headless anyway); windowed builds unaffected
+- by: ui-1 (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (fold into playbook at next retro)
+
+### 2026-09-26 [tooling] Files edited via a Python script on Windows silently switched from LF to CRLF (TDD diff showed 579 changed lines instead of 61; .gd files became CRLF)
+- cause: Python text-mode write() translates \n to os.linesep (\r\n) on Windows
+- fix: Use open(p, 'w', encoding='utf-8', newline='') in edit scripts (or the Edit tool); check with 'file <path>' and normalize with sed -i 's/\r$//'
+- by: eng-1 (project: GodotJam01)
+- status: FOLDED into SKILL.md §4 worker rules (fold into playbook at next retro)
+
+### 2026-09-26 [qa] haiku first-timer persona (R11) recorded 0 of the 6-12 required notes and 2 of 4-6 screenshots, and its chat reply claimed a rule model the files contradict
+- cause: the persona prompt asks for notes but nothing enforces them; only play done validates (unsure + scores), so a cheap model narrates in chat instead
+- fix: Ask playtest-lab to have play done refuse (or flag) a verdict with fewer than N notes / shots, and add to the persona prompt 'a note only counts if play note printed noted'; QA always judges from sessions.jsonl since_last_look + notes.jsonl, never the reply
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/playtest.md + playtest-lab 0.2.1 (done needs notes) (fold into playbook at next retro)
+
+### 2026-09-26 [qa] a 'did the persona learn rule X' check came out inconclusive: the persona died at about 23 s both nights, so it met the rule once
+- cause: the first-timer played at idle-bot level with 120-240-frame full-turn chunks; one haiku session is n=1
+- fix: For rule-learning checks, run 2 personas or one stronger-model persona, and require at least 1 full minute per night before judging; otherwise mark the verdict low-confidence and hand it to a Boss playtest
+- by: qa-1 (project: GodotJam01)
+- status: FOLDED into playbooks/playtest.md (fold into playbook at next retro)
+
+### 2026-09-26 [process] Producer re-armed wait-boss 5+ times while every ticket waited on a Boss playtest; each timeout woke the session with nothing to do
+- cause: SKILL.md says keep one listener armed at all times, even when the whole studio is blocked on Boss
+- fix: When no worker is running and the next step is Boss's, stop re-arming and tell Boss to reply in chat (or re-arm once with the longest timeout)
+- by: producer (project: GodotJam01)
+- status: FOLDED into SKILL.md §1 (fold into playbook at next retro)
+
+### 2026-09-26 [tooling] Usage tab billed eng-1's GJ-10/GJ-14/GJ-19 and gp-1's GJ-12/GJ-15 to their first tickets (GJ-6, GJ-4); M2/M3 look almost free
+- cause: Producer resumed finished workers with SendMessage for new tickets; usage attribution reads the ticket from the spawn prompt only
+- fix: Spawn a fresh worker per ticket when cost per ticket matters, or teach server/usage.js to re-attribute on later 'ticket GJ-N' lines in the transcript
+- by: producer (project: GodotJam01)
+- status: NEW (fold into playbook at next retro)

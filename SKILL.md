@@ -34,11 +34,13 @@ Read `SKILL/lessons/LESSONS.md` (entries marked `NEW` or relevant to this engine
 2. If no `.studio/`: `$CLI init --name "<Game>" --engine <godot|unity|unreal|web> --tier <jam|mobile|indie|aa|aaa>`.
    Then locate the tools this game needs (engine binary, Blender, ComfyUI — check common install dirs, ask Boss
    if not found) and record them: `$CLI config --set engines={"godot":"<path>",...}` so workers don't search again.
-3. Start dashboard in background (Bash `run_in_background`): `$SERVER` → tell Boss: **http://127.0.0.1:4747**
-   (If "port busy", it's already running.) Optionally open it in the built-in browser pane.
+3. Start dashboard in background (Bash `run_in_background`): `$SERVER` → tell Boss the URL it prints. Each project
+   gets its own port (a busy port from an older game's server is skipped and the new port saved to config; if this
+   game's server is already up it says so). Never kill another session's server. Optionally open it in the browser pane.
 4. Arm the Boss listener in background: `$CLI wait-boss --timeout 3000` (short timeouts cause noisy wakeups). When it exits you are
    re-invoked: handle what it printed (message, directive, pause, approval, playtest), then re-arm with the `--since` it printed.
-   Keep exactly one armed at all times while the studio runs.
+   Keep one armed while workers run. When nothing is running and the next step is Boss's (a gate, a playtest), stop
+   re-arming after a timeout and tell Boss to reply in chat; idle wakeups only add noise.
 5. `$CLI board` → you now know the state. Resume from tickets, not memory.
 
 **Visibility & cost (automatic):** the dashboard reads Claude Code transcripts live — Team tab shows who is
@@ -96,7 +98,8 @@ Rules:
 - Blocked → `ticket move <K> blocked --note "<why>"` and post in #blockers, then end your task.
 - Never spend money, log in, or download models/large files without `approval request` + APPROVED.
 - Stay inside files your ticket owns. Follow Boss's global coding standards (CLAUDE.md).
-- Create/edit files with the Write/Edit tools, not big shell heredocs.
+- Create/edit files with the Write/Edit tools, not big shell heredocs. If you must script an edit, keep line endings
+  (Python: open(p, 'w', newline=''); Node: write back what you read) — Windows text mode silently turns LF into CRLF.
 - Browser (if used): serve on port <UNIQUE_PORT>, open your OWN tab (tabs_create), pass tabId on every call,
   never touch other tabs or Boss's playtest port; stop server + close tab at end.
 - Done → check each acceptance item (`ticket check <K> <n>`) with evidence, `ticket link` key files,
@@ -155,4 +158,7 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
 - v1.3 (2026-09-25): retro Mothlight M2 — shared browser pane rules (own tab/port), pixel-sampled UI QA + seed sweeps, data-driven balance harness, clearance math.
 - v1.4 (2026-09-25): live activity + token/cost tracking from transcripts (Team/Usage tabs, `who`/`usage` CLI, usageBudget alerts).
 - v1.4 (2026-09-25): portable paths ($HOME), engine paths recorded per project at boot, README/LICENSE, Mothlight example.
+- v1.6 (2026-09-26): retro NIGHTBEAM (Godot, 3 milestones) — dashboard picks a free port per project, listener pauses while
+  only Boss can act, per-metric intent + config.check at first baseline + holdout checks (playtest-lab 0.2.1), rule-learning
+  persona checks need 2 personas and a Boss playtest, Godot input/float/headless-audio/threading gotchas, each game its own repo.
 - v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.

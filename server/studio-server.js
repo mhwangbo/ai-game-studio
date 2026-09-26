@@ -191,10 +191,24 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.on('error', (e) => {
-  if (e.code === 'EADDRINUSE') { console.error(`port ${PORT} busy — studio server already running? open http://127.0.0.1:${PORT}`); process.exit(2); }
-  throw e;
+/** Name of the studio served on a busy port, or null if it isn't a studio dashboard. */
+async function studioOn(port) {
+  try { return (await (await fetch(`http://127.0.0.1:${port}/api/state`, { signal: AbortSignal.timeout(1500) })).json()).config.name; } catch { return null; }
+}
+
+// Servers from earlier sessions keep running, so a busy port is usually another game's dashboard:
+// move to the next free port and remember it. Same game already served → just point at it.
+let port = PORT;
+server.on('error', async (e) => {
+  if (e.code !== 'EADDRINUSE') throw e;
+  const other = await studioOn(port);
+  if (other === studio.config().name) { console.error(`already running: open http://127.0.0.1:${port}`); process.exit(2); }
+  if (arg('port', null) || port >= PORT + 20) { console.error(`port ${port} busy${other ? ` (studio "${other}")` : ''}; pass --port <free port>`); process.exit(2); }
+  port += 1;
+  server.listen(port, '127.0.0.1');
 });
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`🎮 Studio "${studio.config().name}" dashboard: http://127.0.0.1:${PORT}   (project ${studio.root})`);
+server.on('listening', () => {
+  if (port !== studio.config().port) studio.setConfig({ port });
+  console.log(`🎮 Studio "${studio.config().name}" dashboard: http://127.0.0.1:${port}   (project ${studio.root})`);
 });
+server.listen(port, '127.0.0.1');
