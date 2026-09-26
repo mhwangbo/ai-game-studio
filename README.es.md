@@ -73,6 +73,7 @@ El estado de cada juego vive en `<game>/.studio/` (JSON + JSONL): configuración
 Cada juego vive en su propio repositorio, con sus documentos de diseño y una build jugable.
 
 - **[Mothlight](https://github.com/mhwangbo/mothlight)** ([jugar](https://mhwangbo.github.io/mothlight/)): eres un farol en un jardín nocturno; brilla para atraer a las polillas y apágate para dejar que vuelen hacia la luz más brillante (la luna las salva; las velas y los matamosquitos eléctricos no). Web, hecho en una sola sesión: 8 agentes, 20 tickets, 2 hitos, 2 playtests del Boss. Gráficos procedurales y audio sintetizado, sin assets externos.
+- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**: la última noche de un viejo faro. La luz muestra las rocas a los barcos, y llama a los ahogados: barcos fantasma que se lanzan contra tu lámpara cuando los iluminas. Godot 4.6, 3 hitos guiados por 2 playtests del Boss y playtesters de IA, con cada cambio de balance validado por chequeos de regresión con bots ([playtest-lab](https://github.com/mhwangbo/playtest-lab)).
 
 ## Playtesting: playtest-lab (opcional)
 

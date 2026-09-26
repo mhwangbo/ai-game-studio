@@ -73,6 +73,7 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 게임마다 설계 문서와 플레이 가능한 빌드를 담은 별도 저장소가 있습니다.
 
 - **[Mothlight](https://github.com/mhwangbo/mothlight)** ([플레이하기](https://mhwangbo.github.io/mothlight/)): 밤의 정원에 놓인 랜턴이 되어, 빛을 내 나방을 유인하고 불을 꺼서 나방이 가장 밝은 빛으로 날아가게 합니다(달은 나방을 구하지만, 촛불과 전기 포충기는 그렇지 않습니다). 웹 게임, 한 세션 만에 제작: 에이전트 8명, 티켓 20개, 마일스톤 2개, Boss 플레이테스트 2회. 절차적 비주얼과 합성 오디오, 외부 에셋 없음.
+- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**: 오래된 등대의 마지막 밤. 빛은 배에게 암초를 보여 주지만, 익사한 자들도 불러냅니다. 빛을 받으면 등불을 향해 돌진하는 유령선입니다. Godot 4.6, Boss 플레이테스트 2회와 AI 페르소나 플레이테스터를 거친 마일스톤 3개, 모든 밸런스 변경은 봇 회귀 검사([playtest-lab](https://github.com/mhwangbo/playtest-lab))를 통과해야 반영되었습니다.
 
 ## 플레이테스트: playtest-lab (선택 사항)
 

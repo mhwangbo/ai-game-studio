@@ -71,6 +71,7 @@ Per-game state lives in `<game>/.studio/` (JSON + JSONL): config, tickets, chat 
 Each game lives in its own repo, with its design docs and a playable build.
 
 - **[Mothlight](https://github.com/mhwangbo/mothlight)** ([play it](https://mhwangbo.github.io/mothlight/)): you are a lantern in a night garden. Glow to lure moths, go dark to let them fly to the brightest light (the moon saves them; candles and zappers don't). Web, made in one session: 8 agents, 20 tickets, 2 milestones, 2 Boss playtests. Procedural visuals and synthesized audio, no external assets.
+- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**: the last night of an old lighthouse. Light shows ships the rocks, and calls the drowned: ghost ships that lunge for your lamp when lit. Godot 4.6, 3 milestones driven by 2 Boss playtests and AI persona playtesters, with every balance change gated by bot regression checks ([playtest-lab](https://github.com/mhwangbo/playtest-lab)).
 
 ## Playtesting: playtest-lab (optional)
 
