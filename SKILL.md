@@ -135,6 +135,8 @@ Details: `playbooks/assets-*.md`. Licenses other than CC0/CC-BY/MIT need Boss ap
 - The skill folder is a git repo (public). After a retro, commit the skill changes locally with the Boss's git
   identity and no AI co-author/attribution lines; **push only after Boss approves** (`approval request "Push skill vX.Y" --kind gate`).
   Never commit game projects, `.studio/` state, or personal paths into the skill repo.
+  Each game gets its own git repo in GAME_DIR (`.studio/` gitignored; design docs copied to `design/`); publish it
+  only with Boss approval, then add it to the README section "Games made by the studio".
 - If the CLI/server itself has a bug: fix `server/*.js`, run `node server/studio.js help` + a smoke test, record lesson.
 
 ## 8. Scale

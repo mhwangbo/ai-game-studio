@@ -11,7 +11,7 @@
 
 你就是 **Boss**。你可以实时观看一切，并随时介入。
 
-![Mothlight，一款由该工作室制作的游戏](examples/mothlight/qa-evidence/JAM-20_reverify_desktop_t130.png)
+![Mothlight，一款由该工作室制作的游戏](https://raw.githubusercontent.com/mhwangbo/mothlight/main/screenshots/night.png)
 
 ## 你将获得
 
@@ -64,21 +64,15 @@ roles/              one brief per role: owns, outputs, definition of done
 playbooks/          engines (godot/unity/unreal/web), assets (free, blender, comfyui, paid), QA, playtest, scale tiers
 templates/          GDD, TDD, ticket, milestone, default studio config
 lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memory
-examples/mothlight  a game made end-to-end by the studio (see below)
 ```
 
 每个游戏的状态存放在 `<game>/.studio/` 中（JSON + JSONL）：配置、工单、聊天频道、成员、审批、里程碑、决策。
 
-## 示例：Mothlight
+## 工作室制作的游戏
 
-一款由工作室在一次会话中完成的小型 Web 游戏：你是夜晚花园里的一盏灯笼——发光来吸引飞蛾，熄灭让它们飞向最亮的光源（月亮能拯救它们；蜡烛和灭虫灯则不能）。
-8 个智能体、20 个工单、2 个里程碑、2 次 Boss 试玩。视觉效果全部程序化生成，音频全部合成，没有使用任何外部素材。
+每款游戏都有自己的仓库，包含设计文档和可游玩的构建。
 
-```bash
-python -m http.server 8080 --directory examples/mothlight/game
-```
-
-然后打开 http://localhost:8080（ES 模块需要通过 http 加载，不能用 `file://`）。设计文档位于 `examples/mothlight/docs/`。
+- **[Mothlight](https://github.com/mhwangbo/mothlight)**（[在线试玩](https://mhwangbo.github.io/mothlight/)）：你是夜晚花园里的一盏灯笼——发光来吸引飞蛾，熄灭让它们飞向最亮的光源（月亮能拯救它们；蜡烛和灭虫灯则不能）。Web 游戏，一次会话完成：8 个智能体、20 个工单、2 个里程碑、2 次 Boss 试玩。程序化视觉与合成音频，没有任何外部素材。
 
 ## 试玩测试：playtest-lab（可选）
 

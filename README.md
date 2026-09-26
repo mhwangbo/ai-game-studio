@@ -9,7 +9,7 @@ Engines: **Godot, Unity, Unreal, Web**. Scope: from a one-day jam game up to lar
 
 You are the **Boss**. You watch everything live and can interrupt at any time.
 
-![Mothlight, a game made by the studio](examples/mothlight/qa-evidence/JAM-20_reverify_desktop_t130.png)
+![Mothlight, a game made by the studio](https://raw.githubusercontent.com/mhwangbo/mothlight/main/screenshots/night.png)
 
 ## What you get
 
@@ -62,21 +62,15 @@ roles/              one brief per role: owns, outputs, definition of done
 playbooks/          engines (godot/unity/unreal/web), assets (free, blender, comfyui, paid), QA, playtest, scale tiers
 templates/          GDD, TDD, ticket, milestone, default studio config
 lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memory
-examples/mothlight  a game made end-to-end by the studio (see below)
 ```
 
 Per-game state lives in `<game>/.studio/` (JSON + JSONL): config, tickets, chat channels, workers, approvals, milestones, decisions.
 
-## Example: Mothlight
+## Games made by the studio
 
-A small web game built by the studio in one session: you are a lantern in a night garden — glow to lure moths, go dark to let them fly to the brightest light (the moon saves them; candles and zappers don't).
-8 agents, 20 tickets, 2 milestones, 2 Boss playtests. Procedural visuals and synthesized audio, no external assets.
+Each game lives in its own repo, with its design docs and a playable build.
 
-```bash
-python -m http.server 8080 --directory examples/mothlight/game
-```
-
-Then open http://localhost:8080 (ES modules need http, not `file://`). Design docs are in `examples/mothlight/docs/`.
+- **[Mothlight](https://github.com/mhwangbo/mothlight)** ([play it](https://mhwangbo.github.io/mothlight/)): you are a lantern in a night garden. Glow to lure moths, go dark to let them fly to the brightest light (the moon saves them; candles and zappers don't). Web, made in one session: 8 agents, 20 tickets, 2 milestones, 2 Boss playtests. Procedural visuals and synthesized audio, no external assets.
 
 ## Playtesting: playtest-lab (optional)
 

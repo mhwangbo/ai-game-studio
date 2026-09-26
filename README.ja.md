@@ -11,7 +11,7 @@ Claude Code をゲームスタジオに変えます。**Producer（プロデュ�
 
 あなたは **Boss** です。すべてをリアルタイムで見守り、いつでも介入できます。
 
-![スタジオが制作したゲーム Mothlight](examples/mothlight/qa-evidence/JAM-20_reverify_desktop_t130.png)
+![スタジオが制作したゲーム Mothlight](https://raw.githubusercontent.com/mhwangbo/mothlight/main/screenshots/night.png)
 
 ## 主な機能
 
@@ -64,21 +64,15 @@ roles/              one brief per role: owns, outputs, definition of done
 playbooks/          engines (godot/unity/unreal/web), assets (free, blender, comfyui, paid), QA, playtest, scale tiers
 templates/          GDD, TDD, ticket, milestone, default studio config
 lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memory
-examples/mothlight  a game made end-to-end by the studio (see below)
 ```
 
 ゲームごとの状態は `<game>/.studio/`（JSON + JSONL）に保存されます：設定、チケット、チャットチャンネル、ワーカー、承認、マイルストーン、意思決定。
 
-## 事例：Mothlight
+## スタジオが制作したゲーム
 
-スタジオが 1 セッションで制作した小さな Web ゲームです。プレイヤーは夜の庭にあるランタンになり、光って蛾をおびき寄せ、暗くなって蛾を最も明るい光へ飛ばします（月は蛾を救いますが、ろうそくや殺虫灯は救いません）。
-エージェント 8 体、チケット 20 件、マイルストーン 2 つ、Boss によるプレイテスト 2 回。ビジュアルはプロシージャル生成、オーディオはシンセサイズで、外部アセットは使っていません。
+各ゲームは、設計ドキュメントとプレイ可能なビルドを含む独自のリポジトリにあります。
 
-```bash
-python -m http.server 8080 --directory examples/mothlight/game
-```
-
-その後 http://localhost:8080 を開いてください（ES モジュールは `file://` ではなく http が必要です）。設計ドキュメントは `examples/mothlight/docs/` にあります。
+- **[Mothlight](https://github.com/mhwangbo/mothlight)**（[プレイする](https://mhwangbo.github.io/mothlight/)）：夜の庭のランタンになり、光って蛾をおびき寄せ、暗くなって蛾を最も明るい光へ飛ばします（月は蛾を救いますが、ろうそくや殺虫灯は救いません）。Web ゲーム、1 セッションで制作：エージェント 8 体、チケット 20 件、マイルストーン 2 つ、Boss によるプレイテスト 2 回。プロシージャルなビジュアルとシンセサイズしたオーディオで、外部アセットはありません。
 
 ## プレイテスト：playtest-lab（オプション）
 

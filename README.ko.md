@@ -11,7 +11,7 @@ Audio, Writer, QA, Build가 함께 게임을 기획하고, 만들고, 리뷰하�
 
 여러분은 **Boss**입니다. 모든 것을 실시간으로 지켜보고 언제든 개입할 수 있습니다.
 
-![Mothlight, 스튜디오가 만든 게임](examples/mothlight/qa-evidence/JAM-20_reverify_desktop_t130.png)
+![Mothlight, 스튜디오가 만든 게임](https://raw.githubusercontent.com/mhwangbo/mothlight/main/screenshots/night.png)
 
 ## 제공 기능
 
@@ -64,21 +64,15 @@ roles/              one brief per role: owns, outputs, definition of done
 playbooks/          engines (godot/unity/unreal/web), assets (free, blender, comfyui, paid), QA, playtest, scale tiers
 templates/          GDD, TDD, ticket, milestone, default studio config
 lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memory
-examples/mothlight  a game made end-to-end by the studio (see below)
 ```
 
 게임별 상태는 `<game>/.studio/`(JSON + JSONL)에 저장됩니다: 설정, 티켓, 채팅 채널, 워커, 승인, 마일스톤, 의사결정.
 
-## 예시: Mothlight
+## 스튜디오가 만든 게임
 
-스튜디오가 한 세션 만에 만든 작은 웹 게임입니다. 여러분은 밤의 정원에 놓인 랜턴이 되어, 빛을 내 나방을 유인하고, 불을 꺼서 나방이 가장 밝은 빛으로 날아가게 합니다(달은 나방을 구하지만, 촛불과 전기 포충기는 그렇지 않습니다).
-에이전트 8명, 티켓 20개, 마일스톤 2개, Boss 플레이테스트 2회. 절차적으로 생성한 비주얼과 합성 오디오를 사용했으며 외부 에셋은 없습니다.
+게임마다 설계 문서와 플레이 가능한 빌드를 담은 별도 저장소가 있습니다.
 
-```bash
-python -m http.server 8080 --directory examples/mothlight/game
-```
-
-그런 다음 http://localhost:8080 을 여세요(ES 모듈은 `file://`이 아닌 http로 열어야 합니다). 설계 문서는 `examples/mothlight/docs/`에 있습니다.
+- **[Mothlight](https://github.com/mhwangbo/mothlight)** ([플레이하기](https://mhwangbo.github.io/mothlight/)): 밤의 정원에 놓인 랜턴이 되어, 빛을 내 나방을 유인하고 불을 꺼서 나방이 가장 밝은 빛으로 날아가게 합니다(달은 나방을 구하지만, 촛불과 전기 포충기는 그렇지 않습니다). 웹 게임, 한 세션 만에 제작: 에이전트 8명, 티켓 20개, 마일스톤 2개, Boss 플레이테스트 2회. 절차적 비주얼과 합성 오디오, 외부 에셋 없음.
 
 ## 플레이테스트: playtest-lab (선택 사항)
 

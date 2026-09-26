@@ -11,7 +11,7 @@ Motores: **Godot, Unity, Unreal, Web**. Alcance: desde un juego de game jam de u
 
 Tú eres el **Boss**. Lo ves todo en directo y puedes interrumpir en cualquier momento.
 
-![Mothlight, un juego creado por el estudio](examples/mothlight/qa-evidence/JAM-20_reverify_desktop_t130.png)
+![Mothlight, un juego creado por el estudio](https://raw.githubusercontent.com/mhwangbo/mothlight/main/screenshots/night.png)
 
 ## Qué obtienes
 
@@ -64,21 +64,15 @@ roles/              one brief per role: owns, outputs, definition of done
 playbooks/          engines (godot/unity/unreal/web), assets (free, blender, comfyui, paid), QA, playtest, scale tiers
 templates/          GDD, TDD, ticket, milestone, default studio config
 lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memory
-examples/mothlight  a game made end-to-end by the studio (see below)
 ```
 
 El estado de cada juego vive en `<game>/.studio/` (JSON + JSONL): configuración, tickets, canales de chat, workers, aprobaciones, hitos y decisiones.
 
-## Ejemplo: Mothlight
+## Juegos creados por el estudio
 
-Un pequeño juego web creado por el estudio en una sola sesión: eres un farol en un jardín nocturno; brilla para atraer a las polillas y apágate para dejar que vuelen hacia la luz más brillante (la luna las salva; las velas y los matamosquitos eléctricos no).
-8 agentes, 20 tickets, 2 hitos, 2 playtests del Boss. Gráficos procedurales y audio sintetizado, sin assets externos.
+Cada juego vive en su propio repositorio, con sus documentos de diseño y una build jugable.
 
-```bash
-python -m http.server 8080 --directory examples/mothlight/game
-```
-
-Después abre http://localhost:8080 (los módulos ES necesitan http, no `file://`). Los documentos de diseño están en `examples/mothlight/docs/`.
+- **[Mothlight](https://github.com/mhwangbo/mothlight)** ([jugar](https://mhwangbo.github.io/mothlight/)): eres un farol en un jardín nocturno; brilla para atraer a las polillas y apágate para dejar que vuelen hacia la luz más brillante (la luna las salva; las velas y los matamosquitos eléctricos no). Web, hecho en una sola sesión: 8 agentes, 20 tickets, 2 hitos, 2 playtests del Boss. Gráficos procedurales y audio sintetizado, sin assets externos.
 
 ## Playtesting: playtest-lab (opcional)
 
