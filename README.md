@@ -84,6 +84,8 @@ Then open http://localhost:8080 (ES modules need http, not `file://`). Design do
 
 When it's installed as the `playtest-lab` skill, the studio's playtest gate (`playbooks/playtest.md`) runs it, turns the report's `suggestedTicket`s into tickets, and the lab mirrors summaries into `#qa`. Without it, the studio works exactly as before.
 
+It also adds a free **regression gate** to every sprint. The tech lead records a bot baseline in milestone 1. After that, QA runs `lab.js check` on each wave before closing tickets. A regression reopens the ticket that caused it, and every bug the bots find comes with a replay command that proves the fix.
+
 ## Status
 
 - **Tested end to end:** web / jam tier (Mothlight): kickoff, parallel sprints, QA reject → fix loop, Boss gates, pause/directive/chat interrupts, lesson folding.

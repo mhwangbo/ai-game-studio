@@ -86,6 +86,8 @@ Después abre http://localhost:8080 (los módulos ES necesitan http, no `file://
 
 Cuando está instalado como la skill `playtest-lab`, la puerta de playtest del estudio (`playbooks/playtest.md`) lo ejecuta y convierte los `suggestedTicket`s del informe en tickets, y el lab replica los resúmenes en `#qa`. Sin él, el estudio funciona exactamente igual que antes.
 
+También añade una **puerta de regresión** gratuita a cada sprint. El tech lead registra una línea base de bots en el hito 1. A partir de ahí, QA ejecuta `lab.js check` en cada oleada antes de cerrar tickets. Una regresión reabre el ticket que la causó, y cada bug que encuentran los bots incluye un comando de repetición que demuestra el arreglo.
+
 ## Estado
 
 - **Probado de principio a fin:** tier web / jam (Mothlight): kickoff, sprints en paralelo, bucle de rechazo de QA → corrección, puertas del Boss, interrupciones mediante pausa/directiva/chat, incorporación de lecciones.

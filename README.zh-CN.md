@@ -86,6 +86,8 @@ python -m http.server 8080 --directory examples/mothlight/game
 
 当它以 `playtest-lab` 技能的形式安装后，工作室的试玩测试关卡（`playbooks/playtest.md`）会调用它，把报告中的 `suggestedTicket` 转成工单，lab 也会把摘要同步到 `#qa`。未安装时，工作室的行为与之前完全相同。
 
+它还为每个冲刺加上免费的**回归关卡**：技术负责人在里程碑 1 记录机器人基线，之后 QA 在关闭工单前对每一波运行 `lab.js check`。一旦出现回归，引发它的工单会被重新打开；机器人发现的每个缺陷都附带一条可证明修复的回放命令。
+
 ## 状态
 
 - **已端到端测试：** Web / Game Jam 规模（Mothlight）：启动会议、并行冲刺、QA 驳回 → 修复循环、Boss 审核关卡、暂停/指令/聊天介入、经验教训整合。

@@ -66,6 +66,8 @@ Repeat until milestone done:
 4. While they run: handle wait-boss wakeups; answer #blockers; don't do workers' jobs yourself.
 5. On each worker completion: read its report, `ticket show K`; send to review (qa or tech-lead worker) unless trivial.
    Review pass → reviewer checks AC + moves `done`. Fail → back to `in_progress` with a comment; re-spawn.
+   Game has a playtest-lab baseline → QA runs the regression gate once per wave before closing gameplay/engine
+   tickets (`playbooks/qa-automation.md`); a failing `check` reopens the ticket that caused it.
    Workers' reports list "open issues" and @asks to teammates who may already be finished — finished
    workers never see chat. Turn every open issue into a ticket or relay it to a running worker.
 6. Post a short sprint summary to #production every wave (what landed, what's next, blockers).
@@ -151,3 +153,4 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
 - v1.3 (2026-09-25): retro Mothlight M2 — shared browser pane rules (own tab/port), pixel-sampled UI QA + seed sweeps, data-driven balance harness, clearance math.
 - v1.4 (2026-09-25): live activity + token/cost tracking from transcripts (Team/Usage tabs, `who`/`usage` CLI, usageBudget alerts).
 - v1.4 (2026-09-25): portable paths ($HOME), engine paths recorded per project at boot, README/LICENSE, Mothlight example.
+- v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.
