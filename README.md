@@ -1,3 +1,5 @@
+**English** | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md)
+
 # AI Game Studio — a Claude Code skill
 
 Turn Claude Code into a game studio: a **Producer** agent runs a team of role-based subagents —
