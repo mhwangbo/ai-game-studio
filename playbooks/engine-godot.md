@@ -14,6 +14,9 @@ project.godot  Scenes/  Scripts/  Data/  Assets/{Art,Audio,Fonts}/  Tests/  Buil
 - Run a scene N frames: `"$GODOT" --headless --path <proj> res://Scenes/Main.tscn --quit-after 300`.
 - Tests: `"$GODOT" --headless --path <proj> -s res://Tests/TestRunner.gd` (SceneTree script: runs asserts, `quit(exit_code)`), or GUT if installed.
 - Export: `"$GODOT" --headless --path <proj> --export-release "Windows Desktop" Builds/Windows/Game.exe` (needs export_presets.cfg + export templates; templates missing → `approval request --kind download`).
+- Web export: `--export-release "Web" Builds/Web/index.html` with thread support off in the preset (static hosts like
+  GitHub Pages can't send the COOP/COEP headers threads need). Needs the web export templates (`approval request --kind download`).
+  After every web export, open the title screen in a browser and look at it (see the font gotcha below).
 - Grep output for `ERROR|SCRIPT ERROR|Parse Error` — any hit = failure.
 
 ## Gotchas
@@ -28,5 +31,7 @@ project.godot  Scenes/  Scripts/  Data/  Assets/{Art,Audio,Fonts}/  Tests/  Buil
 - Playtest bridge targets: don't advance the sim until the first `apply_action` after a reset, and assert
   ticks == frames stepped (playtest-lab 0.2.1 no longer runs a frame on reset for ready targets).
 - Invalid hand-written `.tscn` breaks project load. Keep scenes minimal, reference by `res://` path (not `uid://`); Godot fixes UIDs on import.
+- Web builds have no system font fallback: glyphs missing from the bundled font (arrows, symbols, emoji) render as
+  empty boxes, though desktop builds look fine. Keep UI text to plain words ("arrow keys") or bundle a font that has the glyphs.
 - Input actions must exist in project.godot `[input]` before `Input.is_action_pressed` works.
 - Headless has no renderer: for screenshots run without `--headless` (`--rendering-driver opengl3`), save `get_viewport().get_texture().get_image().save_png(...)` then `quit()`.

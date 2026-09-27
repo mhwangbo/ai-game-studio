@@ -84,9 +84,18 @@ It also adds a free **regression gate** to every sprint. The tech lead records a
 ## Status
 
 - **Tested end to end:** web / jam tier (Mothlight): kickoff, parallel sprints, QA reject → fix loop, Boss gates, pause/directive/chat interrupts, lesson folding.
-- **Written but not yet battle-tested:** Godot, Unity and Unreal playbooks, Blender/ComfyUI asset pipelines, larger tiers. Expect the first runs there to generate lessons — that is what the self-update loop is for.
+- **Tested end to end on Godot 4.6** (NIGHTBEAM): 3 milestones, AI persona playtests, a bot regression gate on every balance change, and a web export for GitHub Pages.
+- **Written but not yet battle-tested:** Unity and Unreal playbooks, Blender/ComfyUI asset pipelines, larger tiers. Expect the first runs there to generate lessons — that is what the self-update loop is for.
 - Usage costs are **estimates** at API list prices (see `server/usage.js`, override with `pricing` in `.studio/config.json`); subscription plans are not billed per token.
 - The dashboard binds to `127.0.0.1` only and has no auth — do not expose it to a network.
+
+## Roadmap
+
+- **Unity game:** the next studio game, to battle-test the Unity playbook (playtest-lab's Unity bridge is already verified).
+- **Fun metrics in the playtest gate:** use playtest-lab's upcoming fun report (skill gradient, luck vs skill, dominant strategies) to back balance decisions with data.
+- **Unreal** playbook run, and the **Blender / ComfyUI** asset pipelines on a real game.
+- **Larger tiers:** a mid-size project with more teams working in parallel.
+- **Usage accuracy:** per-ticket costs for resumed workers are attributed since v1.7; next is producer overhead per milestone.
 
 ## License
 

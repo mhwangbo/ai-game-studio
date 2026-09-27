@@ -86,9 +86,18 @@ También añade una **puerta de regresión** gratuita a cada sprint. El tech lea
 ## Estado
 
 - **Probado de principio a fin:** tier web / jam (Mothlight): kickoff, sprints en paralelo, bucle de rechazo de QA → corrección, puertas del Boss, interrupciones mediante pausa/directiva/chat, incorporación de lecciones.
-- **Escrito pero aún no probado a fondo:** playbooks de Godot, Unity y Unreal, pipelines de assets con Blender/ComfyUI, tiers más grandes. Es de esperar que las primeras ejecuciones ahí generen lecciones; para eso existe el bucle de autoactualización.
+- **Probado de principio a fin en Godot 4.6** (NIGHTBEAM): 3 hitos, playtests con personas de IA, una puerta de regresión con bots en cada cambio de balance y una exportación web para GitHub Pages.
+- **Escrito pero aún no probado a fondo:** playbooks de Unity y Unreal, pipelines de assets con Blender/ComfyUI, tiers más grandes. Es de esperar que las primeras ejecuciones ahí generen lecciones; para eso existe el bucle de autoactualización.
 - Los costes de uso son **estimaciones** según precios de lista de la API (consulta `server/usage.js`; se pueden sobrescribir con `pricing` en `.studio/config.json`); los planes de suscripción no se facturan por token.
 - El panel solo escucha en `127.0.0.1` y no tiene autenticación: no lo expongas a una red.
+
+## Hoja de ruta
+
+- **Juego en Unity:** el próximo juego del estudio, para probar a fondo el playbook de Unity (el puente de Unity de playtest-lab ya está verificado).
+- **Métricas de diversión en la puerta de playtest:** usar el próximo informe de diversión de playtest-lab (gradiente de habilidad, suerte vs habilidad, estrategias dominantes) para respaldar con datos las decisiones de balance.
+- Ejecutar el playbook de **Unreal** y los pipelines de assets de **Blender / ComfyUI** en un juego real.
+- **Tiers más grandes:** un proyecto mediano con más equipos trabajando en paralelo.
+- **Precisión del uso:** desde la v1.7 el coste por ticket de los workers reanudados se atribuye bien; lo siguiente es el overhead del productor por hito.
 
 ## Licencia
 

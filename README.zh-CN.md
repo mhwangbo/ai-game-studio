@@ -86,9 +86,18 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 ## 状态
 
 - **已端到端测试：** Web / Game Jam 规模（Mothlight）：启动会议、并行冲刺、QA 驳回 → 修复循环、Boss 审核关卡、暂停/指令/聊天介入、经验教训整合。
-- **已编写但尚未经过实战检验：** Godot、Unity 和 Unreal 工作手册，Blender/ComfyUI 素材管线，更大的规模档位。预计在这些场景下的首批运行会产生不少经验教训——这正是自我更新循环存在的意义。
+- **已在 Godot 4.6 上端到端测试**（NIGHTBEAM）：3 个里程碑、AI 角色试玩、每次平衡调整都经过机器人回归关卡，以及面向 GitHub Pages 的 Web 导出。
+- **已编写但尚未经过实战检验：** Unity 和 Unreal 工作手册，Blender/ComfyUI 素材管线，更大的规模档位。预计在这些场景下的首批运行会产生不少经验教训——这正是自我更新循环存在的意义。
 - 用量费用是按 API 标价计算的**估算值**（见 `server/usage.js`，可在 `.studio/config.json` 中通过 `pricing` 覆盖）；订阅套餐并不按 token 计费。
 - 仪表盘只绑定到 `127.0.0.1`，且没有任何身份验证——切勿将其暴露到网络上。
+
+## 路线图
+
+- **Unity 游戏：** 下一款工作室游戏，用来实战检验 Unity 工作手册（playtest-lab 的 Unity 桥接已验证）。
+- **试玩关卡中的趣味指标：** 用 playtest-lab 即将推出的趣味报告（技术梯度、运气 vs 技术、优势策略）为平衡决策提供数据支撑。
+- 运行 **Unreal** 工作手册，并在真实游戏中使用 **Blender / ComfyUI** 素材管线。
+- **更大的规模档位：** 更多团队并行工作的中型项目。
+- **用量准确度：** 自 v1.7 起，被恢复的工作者按工单分别计费；下一步是按里程碑统计制作人开销。
 
 ## 许可证
 

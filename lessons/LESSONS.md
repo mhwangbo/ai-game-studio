@@ -193,4 +193,10 @@ Format (written by `studio.js lesson add`): date, [area], symptom, cause, fix, b
 - cause: Producer resumed finished workers with SendMessage for new tickets; usage attribution reads the ticket from the spawn prompt only
 - fix: Spawn a fresh worker per ticket when cost per ticket matters, or teach server/usage.js to re-attribute on later 'ticket GJ-N' lines in the transcript
 - by: producer (project: GodotJam01)
-- status: NEW (fold into playbook at next retro)
+- status: FOLDED into server/usage.js (later "ticket KEY-N" messages start a new per-ticket run)
+
+### 2026-09-27 [godot] Web export showed empty boxes for the arrow glyphs in the title's controls line
+- cause: Desktop builds fall back to OS fonts for glyphs missing from the default font; the web build has no fallback
+- fix: Keep UI text to glyphs the bundled font has (write 'arrow keys'), or bundle a font with the symbols; check the title screen in the browser after every web export
+- by: producer (project: GodotJam01)
+- status: FOLDED into playbooks/engine-godot.md (web export step + font gotcha)

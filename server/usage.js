@@ -4,7 +4,8 @@
  * Source of truth = Claude Code transcripts (~/.claude/projects/<slug>/<session>/subagents/agent-*.jsonl
  * and the main session <session>.jsonl). Nothing depends on workers self-reporting:
  *   - worker identity:  first prompt contains  --project "<GAME_DIR>" ... --as <name>
- *   - tickets:          KEY-N ids in "Your ticket(s)" part of the prompt (split evenly)
+ *   - tickets:          KEY-N ids in "Your ticket(s)" part of the prompt (split evenly); a later message to a
+ *                       resumed worker that names "ticket KEY-N" starts a new run billed to that ticket
  *   - tokens:           assistant message usage (deduped by message id)
  *   - finished:         SubagentStop hook attachment
  *   - live action:      last tool_use in the transcript
@@ -65,6 +66,7 @@ class TranscriptState {
     this.prompt = null; this.model = ''; this.first = 0; this.last = 0; this.finished = 0;
     this.msgs = new Map(); // message.id -> usage (max per field)
     this.lastAction = ''; this.lastActionTs = 0; this.toolCalls = 0;
+    this.later = []; // { ts, text } of user messages after the prompt (e.g. SendMessage to a resumed worker)
   }
 
   update() {
@@ -88,6 +90,9 @@ class TranscriptState {
     if (ts) { if (!this.first) this.first = ts; this.last = Math.max(this.last, ts); }
     if (o.type === 'user' && this.prompt === null && o.message && o.message.role === 'user') {
       this.prompt = textOf(o.message.content);
+    } else if (o.type === 'user' && o.message && o.message.role === 'user') {
+      const text = textOf(o.message.content);
+      if (text) this.later.push({ ts, text: text.slice(0, 4000) });
     }
     if (o.type === 'attachment' && o.attachment && o.attachment.hookEvent === 'SubagentStop') this.finished = ts || Date.now();
     if (o.type === 'assistant' && o.message) {
@@ -110,10 +115,17 @@ class TranscriptState {
     }
   }
 
-  tokens(sinceTs = 0) {
+  tokens(sinceTs = 0, untilTs = Infinity) {
     const t = emptyTokens();
-    for (const v of this.msgs.values()) if (!sinceTs || v.ts >= sinceTs) addTokens(t, v.t);
+    for (const v of this.msgs.values()) if ((!sinceTs || v.ts >= sinceTs) && v.ts < untilTs) addTokens(t, v.t);
     return t;
+  }
+
+  /** Latest assistant-message timestamp in [sinceTs, untilTs). */
+  lastBetween(sinceTs, untilTs) {
+    let last = 0;
+    for (const v of this.msgs.values()) if (v.ts >= sinceTs && v.ts < untilTs) last = Math.max(last, v.ts);
+    return last;
   }
 }
 
@@ -201,13 +213,20 @@ class UsageTracker {
         const tkLine = (s.prompt.match(/Your tickets?[^\n]*(\n[^\n]*){0,1}/i) || [''])[0];
         let tks = [...new Set((tkLine.match(tkRe) || []))];
         if (!tks.length) tks = [...new Set((s.prompt.match(tkRe) || []))].slice(0, 1);
-        const t = s.tokens();
-        const state = s.finished ? 'done' : (now - s.last < ACTIVE_MS ? 'active' : 'stale');
-        runs.push({
-          id: path.basename(s.file, '.jsonl').replace(/^agent-/, ''), kind: 'agent', name, role,
-          team: (workers[name] || {}).team || guessTeam(role, name), tickets: tks, model: s.model,
-          start: s.first, last: s.last, finished: s.finished, state, lastAction: s.lastAction, lastActionTs: s.lastActionTs,
-          toolCalls: s.toolCalls, tokens: t, total: totalTokens(t), cost: costOf(t, s.model, pricing),
+        const baseId = path.basename(s.file, '.jsonl').replace(/^agent-/, '');
+        const team = (workers[name] || {}).team || guessTeam(role, name);
+        const segs = ticketSegments(s, tks, key);
+        segs.forEach((seg, i) => {
+          const latest = i === segs.length - 1;
+          const t = s.tokens(seg.start, seg.end);
+          const state = !latest || s.finished ? 'done' : (now - s.last < ACTIVE_MS ? 'active' : 'stale');
+          runs.push({
+            id: i ? `${baseId}#${i + 1}` : baseId, kind: 'agent', name, role, team, tickets: seg.tickets, model: s.model,
+            start: seg.start || s.first, last: latest ? s.last : (s.lastBetween(seg.start, seg.end) || seg.start),
+            finished: latest ? s.finished : seg.end, state,
+            lastAction: latest ? s.lastAction : '', lastActionTs: latest ? s.lastActionTs : 0,
+            toolCalls: latest ? s.toolCalls : 0, tokens: t, total: totalTokens(t), cost: costOf(t, s.model, pricing),
+          });
         });
       } else if (this.mainMatches(s)) {
         const t = s.tokens(cfg.created || 0);
@@ -246,10 +265,28 @@ class UsageTracker {
       byTeam: agg((r) => [r.team || 'unknown']),
       byTicket,
       byMilestone,
-      active: runs.filter((r) => r.state === 'active').map((r) => r.name),
+      active: [...new Set(runs.filter((r) => r.state === 'active').map((r) => r.name))],
       note: 'API-list-price estimate from transcript token counts; subscription plans are not billed per token.',
     };
   }
+}
+
+/**
+ * Split a worker transcript into per-ticket runs. The producer often resumes a finished worker with
+ * "new ticket GJ-16 ..." instead of spawning a fresh one; before this, all later work was billed to the first
+ * ticket. A later message switches tickets only when it names one as "ticket KEY-N" (not "ticket show KEY-N").
+ */
+function ticketSegments(s, firstTickets, key) {
+  const re = new RegExp(`\\b[Tt]ickets?\\s+(${key}-\\d+)`, 'g');
+  const segs = [{ start: 0, end: Infinity, tickets: firstTickets }];
+  for (const m of s.later) {
+    const tks = [...new Set([...m.text.matchAll(re)].map((x) => x[1]))];
+    const cur = segs[segs.length - 1];
+    if (!tks.length || !m.ts || tks.join() === cur.tickets.join()) continue;
+    cur.end = m.ts;
+    segs.push({ start: m.ts, end: Infinity, tickets: tks });
+  }
+  return segs;
 }
 
 function guessTeam(role, name) {

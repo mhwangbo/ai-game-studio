@@ -161,4 +161,6 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
 - v1.6 (2026-09-26): retro NIGHTBEAM (Godot, 3 milestones) — dashboard picks a free port per project, listener pauses while
   only Boss can act, per-metric intent + config.check at first baseline + holdout checks (playtest-lab 0.2.1), rule-learning
   persona checks need 2 personas and a Boss playtest, Godot input/float/headless-audio/threading gotchas, each game its own repo.
+- v1.7 (2026-09-27): usage bills resumed workers per ticket ("ticket KEY-N" messages start a new run), Godot web export
+  step + web font gotcha, README status (Godot tested) and roadmap.
 - v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.
