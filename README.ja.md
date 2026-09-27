@@ -73,7 +73,7 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 各ゲームは、設計ドキュメントとプレイ可能なビルドを含む独自のリポジトリにあります。
 
 - **[Mothlight](https://github.com/mhwangbo/mothlight)**（[プレイする](https://mhwangbo.github.io/mothlight/)）：夜の庭のランタンになり、光って蛾をおびき寄せ、暗くなって蛾を最も明るい光へ飛ばします（月は蛾を救いますが、ろうそくや殺虫灯は救いません）。Web ゲーム、1 セッションで制作：エージェント 8 体、チケット 20 件、マイルストーン 2 つ、Boss によるプレイテスト 2 回。プロシージャルなビジュアルとシンセサイズしたオーディオで、外部アセットはありません。
-- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**：古い灯台の最後の夜。光は船に岩礁を示し、溺れた者たちも呼び寄せます。照らされると灯火へ突進する幽霊船です。Godot 4.6、Boss のプレイテスト 2 回と AI ペルソナのプレイテスターを経た 3 つのマイルストーン。すべてのバランス変更はボットの回帰チェック（[playtest-lab](https://github.com/mhwangbo/playtest-lab)）を通過してから反映されました。
+- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**（[プレイする](https://mhwangbo.github.io/nightbeam/)）：古い灯台の最後の夜。光は船に岩礁を示し、溺れた者たちも呼び寄せます。照らされると灯火へ突進する幽霊船です。Godot 4.6、Boss のプレイテスト 2 回と AI ペルソナのプレイテスターを経た 3 つのマイルストーン。すべてのバランス変更はボットの回帰チェック（[playtest-lab](https://github.com/mhwangbo/playtest-lab)）を通過してから反映されました。
 
 ## プレイテスト：playtest-lab（オプション）
 

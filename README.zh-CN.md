@@ -73,7 +73,7 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 每款游戏都有自己的仓库，包含设计文档和可游玩的构建。
 
 - **[Mothlight](https://github.com/mhwangbo/mothlight)**（[在线试玩](https://mhwangbo.github.io/mothlight/)）：你是夜晚花园里的一盏灯笼——发光来吸引飞蛾，熄灭让它们飞向最亮的光源（月亮能拯救它们；蜡烛和灭虫灯则不能）。Web 游戏，一次会话完成：8 个智能体、20 个工单、2 个里程碑、2 次 Boss 试玩。程序化视觉与合成音频，没有任何外部素材。
-- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**：一座老灯塔的最后一夜。光为船只照出礁石，也唤来溺亡者：被照亮就会冲向灯火的幽灵船。Godot 4.6，历经 2 次 Boss 试玩和 AI 人设试玩员的 3 个里程碑，每次平衡调整都先通过机器人回归检查（[playtest-lab](https://github.com/mhwangbo/playtest-lab)）。
+- **[NIGHTBEAM](https://github.com/mhwangbo/nightbeam)**（[在线试玩](https://mhwangbo.github.io/nightbeam/)）：一座老灯塔的最后一夜。光为船只照出礁石，也唤来溺亡者：被照亮就会冲向灯火的幽灵船。Godot 4.6，历经 2 次 Boss 试玩和 AI 人设试玩员的 3 个里程碑，每次平衡调整都先通过机器人回归检查（[playtest-lab](https://github.com/mhwangbo/playtest-lab)）。
 
 ## 试玩测试：playtest-lab（可选）
 
