@@ -22,6 +22,9 @@ Applies when the playtest-lab skill is installed (`~/.claude/skills/playtest-lab
   targets as `min`/`max`. Without it every improvement and every bit of noise fails the gate.
 - **Run:** `$LAB check --label "<TICKET or wave>"` → save the output to `.studio/qa/<TICKET>-check.log` and `ticket link` it.
 - **Exit 0 (PASS):** that log is evidence for "no regressions".
+- **Balance tickets:** also save `$LAB fun --run <that check run>` to `.studio/qa/<TICKET>-fun.log` (free, same bots)
+  and compare it with the previous one: luck share, upsets, dominant strategy. A balance change that passes `check`
+  but moves a GDD §4b fun target the wrong way goes back to the designer, like a regression.
 - **Exit 1 (FAIL):** comment the regressed rows on the ticket that caused them, `ticket move K in_progress`.
   New crash / invariant / error / softlock findings: open a `bug` ticket per finding, copy its repro
   (`lab.js replay <trace>`) and add the AC "`$LAB replay <trace> --expect fixed` exits 0".

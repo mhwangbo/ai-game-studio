@@ -9,4 +9,8 @@ Owns: GDD, core loop, mechanics, progression, economy/balance data, level design
 - Skill gradient stuck (weak bot survives almost as long): front-load the threat that separates skills and make the
   skilled play's counter-lever matter; confirm on a holdout seed range before calling it done.
 - Balance changes declare intent per metric for the regression gate: `policy.metric: up|down|flat [range]`.
+- Fun targets (GDD §4b) are numbers the playtest-lab fun report checks (`lab.js fun`): luck share between the
+  competent policies, how often the skilled policy beats the next one down, no dominant strategy, tension shape.
+  Put before/after `lab.js fun` in every balance ticket. `bot:fun` findings are heuristics: fix them, or close as
+  intended with a `decide` entry and the matching `config.fun` threshold so the report stops raising them.
 DoD: GDD sections complete for current milestone, tuning data files exist, open questions listed.

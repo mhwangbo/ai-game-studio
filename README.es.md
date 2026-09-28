@@ -83,6 +83,8 @@ Cuando está instalado como la skill `playtest-lab`, la puerta de playtest del e
 
 También añade una **puerta de regresión** gratuita a cada sprint. El tech lead registra una línea base de bots en el hito 1. A partir de ahí, QA ejecuta `lab.js check` en cada oleada antes de cerrar tickets. Una regresión reabre el ticket que la causó, y cada bug que encuentran los bots incluye un comando de repetición que demuestra el arreglo.
 
+Con playtest-lab 0.3 o posterior, cada puerta de playtest también publica **números de diversión** de las mismas partidas gratuitas de los bots: gradiente de habilidad, proporción de suerte frente a habilidad, con qué frecuencia gana el mejor juego, estrategias dominantes y una curva de tensión, junto a los números de la puerta anterior y los objetivos de diversión del GDD. El diseñador responde a cada hallazgo `bot:fun` con un arreglo o una decisión registrada.
+
 ## Estado
 
 - **Probado de principio a fin:** tier web / jam (Mothlight): kickoff, sprints en paralelo, bucle de rechazo de QA → corrección, puertas del Boss, interrupciones mediante pausa/directiva/chat, incorporación de lecciones.
@@ -94,7 +96,6 @@ También añade una **puerta de regresión** gratuita a cada sprint. El tech lea
 ## Hoja de ruta
 
 - **Juego en Unity:** el próximo juego del estudio, para probar a fondo el playbook de Unity (el puente de Unity de playtest-lab ya está verificado).
-- **Métricas de diversión en la puerta de playtest:** usar el próximo informe de diversión de playtest-lab (gradiente de habilidad, suerte vs habilidad, estrategias dominantes) para respaldar con datos las decisiones de balance.
 - Ejecutar el playbook de **Unreal** y los pipelines de assets de **Blender / ComfyUI** en un juego real.
 - **Tiers más grandes:** un proyecto mediano con más equipos trabajando en paralelo.
 - **Precisión del uso:** desde la v1.7 el coste por ticket de los workers reanudados se atribuye bien; lo siguiente es el overhead del productor por hito.

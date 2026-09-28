@@ -9,6 +9,12 @@ Trigger: milestone end, or Boss hits 🕹 Playtest.
    (contract `playtest-report/1`) and posts a summary to #qa. Turn each `issues[].suggestedTicket` into a ticket
    (dedupe against open ones; bot findings bring a `lab.js replay <trace> --expect fixed` AC) and attach the
    report path to the playtest post. Never let the lab edit game files.
+   **Fun numbers** (playtest-lab 0.3+, free, from the same bot run): `$LAB fun` → add a short "Fun" block to the
+   playtest post: skill gradient, luck vs skill share, upsets ("careful beats greedy on N% of seeds"), dominant
+   strategy, tension shape. Put last gate's numbers beside them (its report's `fun`) and mark each GDD §4b fun target
+   met / missed. Boss judges feel; these tell Boss whether the balance claims hold.
+   `bot:fun` issues are heuristics, not bugs: ticket them to the game designer, who fixes them or closes them as
+   intended (a `decide` entry plus the matching `config.fun` threshold, e.g. flat tension in a cozy game).
    Persona results: judge from sessions.jsonl + notes only, never the persona's reply (cheap models narrate instead of
    logging; the lab now refuses `done` without 3 notes). For "does a new player learn rule X", run 2 personas (or a
    stronger model) with at least a minute per session; a single persona that dies at 20 s is low confidence, so the

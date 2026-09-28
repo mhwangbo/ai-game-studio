@@ -81,6 +81,8 @@ When it's installed as the `playtest-lab` skill, the studio's playtest gate (`pl
 
 It also adds a free **regression gate** to every sprint. The tech lead records a bot baseline in milestone 1. After that, QA runs `lab.js check` on each wave before closing tickets. A regression reopens the ticket that caused it, and every bug the bots find comes with a replay command that proves the fix.
 
+With playtest-lab 0.3+, every playtest gate also posts **fun numbers** from the same free bot runs: skill gradient, luck vs skill share, how often better play wins, dominant strategies and a tension curve, next to the last gate's numbers and the GDD's fun targets. The designer answers each `bot:fun` finding with a fix or a recorded decision.
+
 ## Status
 
 - **Tested end to end:** web / jam tier (Mothlight): kickoff, parallel sprints, QA reject → fix loop, Boss gates, pause/directive/chat interrupts, lesson folding.
@@ -92,7 +94,6 @@ It also adds a free **regression gate** to every sprint. The tech lead records a
 ## Roadmap
 
 - **Unity game:** the next studio game, to battle-test the Unity playbook (playtest-lab's Unity bridge is already verified).
-- **Fun metrics in the playtest gate:** use playtest-lab's upcoming fun report (skill gradient, luck vs skill, dominant strategies) to back balance decisions with data.
 - **Unreal** playbook run, and the **Blender / ComfyUI** asset pipelines on a real game.
 - **Larger tiers:** a mid-size project with more teams working in parallel.
 - **Usage accuracy:** per-ticket costs for resumed workers are attributed since v1.7; next is producer overhead per milestone.

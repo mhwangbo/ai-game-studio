@@ -83,6 +83,8 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 
 它还为每个冲刺加上免费的**回归关卡**：技术负责人在里程碑 1 记录机器人基线，之后 QA 在关闭工单前对每一波运行 `lab.js check`。一旦出现回归，引发它的工单会被重新打开；机器人发现的每个缺陷都附带一条可证明修复的回放命令。
 
+使用 playtest-lab 0.3 及以上版本时，每个试玩关卡还会基于同一批免费的机器人运行发布**趣味数据**：技巧梯度、运气与技巧占比、更好的玩法获胜的比例、压倒性策略和紧张度曲线，并与上一次关卡的数据及 GDD 的趣味目标并列展示。设计师需要对每条 `bot:fun` 发现给出修复或记录在案的决定。
+
 ## 状态
 
 - **已端到端测试：** Web / Game Jam 规模（Mothlight）：启动会议、并行冲刺、QA 驳回 → 修复循环、Boss 审核关卡、暂停/指令/聊天介入、经验教训整合。
@@ -94,7 +96,6 @@ lessons/LESSONS.md  append-only log of blockers and fixes — the studio's memor
 ## 路线图
 
 - **Unity 游戏：** 下一款工作室游戏，用来实战检验 Unity 工作手册（playtest-lab 的 Unity 桥接已验证）。
-- **试玩关卡中的趣味指标：** 用 playtest-lab 即将推出的趣味报告（技术梯度、运气 vs 技术、优势策略）为平衡决策提供数据支撑。
 - 运行 **Unreal** 工作手册，并在真实游戏中使用 **Blender / ComfyUI** 素材管线。
 - **更大的规模档位：** 更多团队并行工作的中型项目。
 - **用量准确度：** 自 v1.7 起，被恢复的工作者按工单分别计费；下一步是按里程碑统计制作人开销。

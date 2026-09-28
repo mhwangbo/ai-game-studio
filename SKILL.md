@@ -163,4 +163,7 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
   persona checks need 2 personas and a Boss playtest, Godot input/float/headless-audio/threading gotchas, each game its own repo.
 - v1.7 (2026-09-27): usage bills resumed workers per ticket ("ticket KEY-N" messages start a new run), Godot web export
   step + web font gotcha, README status (Godot tested) and roadmap.
+- v1.8 (2026-09-27): fun numbers in the playtest gate (playtest-lab 0.3 `lab.js fun`): GDD §4b fun targets, a Fun block
+  beside last gate's numbers in the playtest post, `bot:fun` issues to the designer (fix or decide), fun log on balance
+  tickets, tech lead adds `tension(obs)` + `config.fun` with the M1 adapter.
 - v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.
