@@ -294,7 +294,7 @@ function guessTeam(role, name) {
   if (/qa|test/.test(s)) return 'qa';
   if (/audio|sound|compos|^au-/.test(s)) return 'audio';
   if (/artist|art-|tech-art/.test(s)) return 'art';
-  if (/design|writer|creative|^cd-|^gd-/.test(s)) return 'design';
+  if (/design|writer|narrative|story|creative|^cd-|^gd-|^sd-|^nl-|^wr-/.test(s)) return 'design';
   if (/build|release/.test(s)) return 'build';
   if (/producer/.test(s)) return 'production';
   return 'engineering';

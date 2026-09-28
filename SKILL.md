@@ -53,7 +53,8 @@ bot warns in #production at 80%/100%; at 100% spawn nothing new and ask Boss.
 ## 2. New game kickoff (Pre-production)
 Run in order; each is a ticket. Spawn workers (§4) for the doc work.
 1. **Pitch** — creative-director: 1-page pitch + 3 pillars → `.studio/docs/Pitch.md`.
-2. **GDD** — game-designer (+writer if narrative): `templates/GDD.md` → `.studio/docs/GDD.md`.
+2. **GDD** — game-designer (player experience) + systems-designer (rules, numbers) + narrative-lead if story-driven
+   (story bible, Boss picks the big story choices): `templates/GDD.md` → `.studio/docs/GDD.md`. Jam tier: one designer covers all three.
 3. **Boss gate** — post summary in #general, `approval request "Approve GDD v1" --kind gate`. Wait.
 4. **TDD** — tech-lead: engine, architecture, folder layout, coding standards (`templates/TDD.md`), spike tickets for risks.
 5. **Plan** — you: milestones (`milestone new`), epics, and tickets with **testable acceptance criteria**
@@ -166,4 +167,8 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
 - v1.8 (2026-09-27): fun numbers in the playtest gate (playtest-lab 0.3 `lab.js fun`): GDD §4b fun targets, a Fun block
   beside last gate's numbers in the playtest post, `bot:fun` issues to the designer (fix or decide), fun log on balance
   tickets, tech lead adds `tension(obs)` + `config.fun` with the M1 adapter.
+- v1.9 (2026-09-28): design team split (Boss, after the Afterlife Hotel M2 playtest stalled at an unexplained Prep
+  screen): game-designer = player experience (onboarding, clarity, pacing, playtest synthesis), new systems-designer
+  (rules, numbers, balance, bot targets) and narrative-lead (story bible, reveal schedule, Boss picks big story choices);
+  writer works inside the story bible. Jam tier keeps one designer.
 - v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.
