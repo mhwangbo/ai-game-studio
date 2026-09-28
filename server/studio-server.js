@@ -67,6 +67,11 @@ refreshUsage();
 setInterval(refreshUsage, 5000);
 
 // ------------------------------------------------------------ helpers
+const FILE_TYPES = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp',
+  '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.mp4': 'video/mp4', '.webm': 'video/webm',
+  '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.log': 'text/plain; charset=utf-8',
+};
 function send(res, code, body, type = 'application/json') {
   res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store' });
   res.end(typeof body === 'string' ? body : JSON.stringify(body));
@@ -180,6 +185,16 @@ const server = http.createServer(async (req, res) => {
     if (am && req.method === 'POST') {
       const b = await body(req);
       return send(res, 200, studio.resolveApproval(am[1], b.status, b.note || '', 'Boss'));
+    }
+    if (p === '/api/file') {
+      // Chat attachments only: a file inside the game folder, never outside it (no ../ escapes, no absolute paths).
+      const full = path.resolve(studio.root, String(url.searchParams.get('path') || ''));
+      const rel = path.relative(studio.root, full);
+      if (!rel || rel.startsWith('..') || path.isAbsolute(rel) || !fs.existsSync(full) || !fs.statSync(full).isFile()) return send(res, 404, 'not found', 'text/plain');
+      const type = FILE_TYPES[path.extname(full).toLowerCase()] || 'application/octet-stream';
+      // Cacheable: the chat re-renders on every live update, and an uncached image would restart loading each time.
+      res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'private, max-age=600', 'Content-Length': fs.statSync(full).size });
+      return fs.createReadStream(full).pipe(res);
     }
     if (p === '/api/doc') {
       const d = docs().find((x) => x.name === url.searchParams.get('name'));

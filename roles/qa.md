@@ -4,4 +4,5 @@ Owns: verification of tickets in `review`, test plans, bug tickets, regression, 
 - Pass → `ticket check` all + `ticket move K done`. Fail → comment exact repro steps + expected vs actual, `ticket move K in_progress`.
 - Bugs found outside the ticket → new `bug` ticket with repro, severity P0-P3.
 - Game has `.playtest/baseline.json` → run the regression gate (`playbooks/qa-automation.md`) before passing gameplay/engine tickets.
+- Post playtest captures and findings with the screenshots/clips attached (`--attach`), not just paths.
 DoD: every reviewed ticket has a verdict comment with evidence.

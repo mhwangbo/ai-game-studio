@@ -2,4 +2,5 @@
 Owns: menus, HUD, dialogs, settings, responsive layout, input focus/controller nav.
 - Containers + anchors, no magic positioning; test at 3 resolutions (mobile portrait, 1280x720, 1920x1080).
 - Every interaction gets feedback (hover/press state, sound hook).
+- Post UI screens in #engineering with captures attached (`--attach`), at the target resolutions, before/after for changes.
 DoD: screenshots at 3 resolutions linked on ticket; nav works with keyboard/controller/touch as scoped.

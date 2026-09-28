@@ -13,6 +13,11 @@ const crypto = require('crypto');
 
 const SKILL_DIR = path.resolve(__dirname, '..');
 const DEFAULT_CHANNELS = ['general', 'production', 'design', 'engineering', 'art', 'audio', 'qa', 'build', 'approvals', 'blockers'];
+// Chat attachments the dashboard can show inline; anything else is a download link.
+const ATTACH_KINDS = {
+  '.png': 'image', '.jpg': 'image', '.jpeg': 'image', '.gif': 'image', '.webp': 'image',
+  '.wav': 'audio', '.mp3': 'audio', '.ogg': 'audio', '.mp4': 'video', '.webm': 'video',
+};
 const STATUSES = ['backlog', 'todo', 'in_progress', 'review', 'blocked', 'done'];
 const TYPES = ['feature', 'bug', 'art', 'audio', 'design', 'chore', 'spike', 'build', 'qa'];
 const TEAM_CHANNEL = {
@@ -128,9 +133,22 @@ class Studio {
     const msg = { id: `${now()}-${rid()}`, ts: now(), from, role: extra.role || '', channel: ch, text: String(text) };
     if (extra.ticket) msg.ticket = extra.ticket;
     if (extra.kind) msg.kind = extra.kind;
+    if (extra.attach && extra.attach.length) msg.attach = extra.attach.map((f) => this.attachment(f));
     fs.mkdirSync(this.p('chat'), { recursive: true });
     fs.appendFileSync(this.p('chat', `${ch}.jsonl`), JSON.stringify(msg) + '\n');
     return msg;
+  }
+
+  /**
+   * A chat attachment: an existing file inside the game folder, stored relative to it so the dashboard can show it
+   * (images, audio and video inline, anything else as a link). Files outside the game folder are refused.
+   */
+  attachment(file) {
+    const full = path.resolve(this.root, String(file));
+    const rel = path.relative(this.root, full);
+    if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) throw new Error(`attachment must be inside the game folder: ${file}`);
+    if (!fs.existsSync(full) || !fs.statSync(full).isFile()) throw new Error(`attachment not found: ${file}`);
+    return { path: rel.split(path.sep).join('/'), kind: ATTACH_KINDS[path.extname(full).toLowerCase()] || 'file', name: path.basename(full) };
   }
 
   read(channel, { since = 0, limit = 50 } = {}) {
@@ -466,7 +484,8 @@ const HELP = `studio.js — AI Game Studio CLI   (global flags: --project <dir> 
   config [--set key=value]
   board                                   compact status of the whole studio
   pulse --as NAME [--role R --team T --ticket K --status "doing X" --error "msg" --state working|idle|paused|done]
-  post <#channel> "text" --as NAME [--ticket K]
+  post <#channel> "text" --as NAME [--ticket K --attach a.png,b.wav]
+                                          attachments: files inside the game folder; images/audio/video show inline
   read <#channel> [--limit 30 --since ts]
   channels
   ticket new --title T [--team T --type feature --epic E1 --milestone M1 --priority P1 --assignee A
@@ -530,7 +549,8 @@ async function main() {
     case 'board': return out(s.board());
     case 'channels': return out(s.channels(), s.channels().map((c) => '#' + c).join(' '));
     case 'post': {
-      const m = s.post(as, pos[1] || 'general', pos.slice(2).join(' '), { ticket: o.ticket, role: o.role || (s.workers()[as] || {}).role });
+      const attach = o.attach ? String(o.attach).split(',').map((x) => x.trim()).filter(Boolean) : [];
+      const m = s.post(as, pos[1] || 'general', pos.slice(2).join(' '), { ticket: o.ticket, role: o.role || (s.workers()[as] || {}).role, attach });
       return out(m, 'posted');
     }
     case 'read': {

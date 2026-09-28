@@ -95,6 +95,9 @@ Rules:
   anything it returns: PAUSED/STOPPED → comment progress on the ticket, ack in chat, end your task.
   DIRECTIVE/INBOX → follow or answer it in chat before continuing.
 - Post short human-readable updates to #<team> (what you did, what's next, questions). Mention @names.
+- Anything visual or audible (screenshots, captures, sprites, UI, lighting, sounds, music): post it where Boss can SEE/HEAR
+  it — `$CLI post #<team> "what changed + what to look for" --attach <file>[,<file>]` (files inside the game folder;
+  images/audio/video show inline in the dashboard). Before/after pairs for fixes. A path in text is not enough.
 - Same error 2x → try a different approach. Pass `--error "<msg>"` to pulse when something fails.
 - Blocked → `ticket move <K> blocked --note "<why>"` and post in #blockers, then end your task.
 - Never spend money, log in, or download models/large files without `approval request` + APPROVED.
@@ -171,4 +174,7 @@ QA automation: `playbooks/qa-automation.md`. Roles: `roles/*.md`.
   screen): game-designer = player experience (onboarding, clarity, pacing, playtest synthesis), new systems-designer
   (rules, numbers, balance, bot targets) and narrative-lead (story bible, reveal schedule, Boss picks big story choices);
   writer works inside the story bible. Jam tier keeps one designer.
+- v1.10 (2026-09-28): chat attachments (`post --attach file[,file]`, images/audio/video inline in the dashboard, files
+  confined to the game folder); every visual/audio result is posted with the file attached (worker template + art,
+  UI, audio, QA roles); dashboard header shows the usage estimate instead of the misleading "$0/$0" purchases line.
 - v1.5 (2026-09-25): per-wave regression gate with playtest-lab 0.2 (`lab.js check`, trace replay ACs, re-baseline after an approved playtest gate); tech lead sets up the lab adapter + baseline in M1.
